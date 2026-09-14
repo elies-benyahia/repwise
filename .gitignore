@@ -10,3 +10,7 @@ dist/
 # d'exercices (backend/uploads/exercices/, wger.de) sont au contraire un asset statique livré
 # avec l'app — elles doivent rester suivies par git, sinon elles manquent au déploiement.
 backend/uploads/avatars/
+
+# Dossiers créés par `vercel link`/`vercel --prod` (racine et frontend/) : jeton OIDC local et
+# métadonnées de projet, jamais commités.
+.vercel

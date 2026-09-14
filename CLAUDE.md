@@ -107,6 +107,23 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   dans le dashboard Aiven, aucun endpoint ne le renvoie en clair, pas même après une rotation).
   Restent (comptes/paiements que je ne peux pas faire à la place de l'utilisateur) : compte Resend
   pour activer l'envoi réel des emails, achat du domaine, placeholders des pages légales.
+- **Projet Vercel `repwise`, Root Directory = `frontend`** (dans les réglages du projet, pas dans
+  `vercel.json`). Tous les déploiements déclenchés par un `git push` entre le commit AdSense et le
+  15/09 ont échoué silencieusement (`vite: command not found` — Vercel buildait depuis la racine
+  du monorepo, sans `vite` en dépendance) parce que ce réglage était resté à `.` : corrigé
+  (`vercel project update repwise --root-directory frontend`), vérifié avec un vrai build réussi
+  et `ads.txt`/`/api/sante` répondant correctement en prod. **Toujours vérifier `vercel ls` (pas
+  juste `vercel project ls`) après un déploiement suspect** : `project ls` peut afficher une
+  "Latest Production URL" à jour alors que le déploiement sous-jacent est en `● Error`. Pour un
+  redéploiement manuel (`vercel --prod`), lancer la commande depuis la **racine du dépôt**
+  (`muscu-app/`, liée au projet `repwise` via `.vercel/project.json`) — depuis `frontend/`
+  directement, `Root Directory: frontend` se cherche en `frontend/frontend` et échoue.
+- `frontend/vercel.json` : le rewrite catch-all SPA (`/(.*) → /index.html`, nécessaire pour le
+  routage React Router) avale aussi les fichiers statiques à la racine (`ads.txt` a été découvert
+  cassé ainsi ; `robots.txt` s'en sort par un traitement spécial propre à Vercel, mais ce n'est pas
+  garanti). **Tout nouveau fichier statique ajouté à `frontend/public/` et censé être servi tel
+  quel à la racine doit avoir un rewrite passthrough explicite AVANT le catch-all**
+  (`{ "source": "/mon-fichier.ext", "destination": "/mon-fichier.ext" }`).
 - URL propre du frontend (**getrepwise.vercel.app**) : alias manuel (`vercel alias set`) posé
   par-dessus l'URL générée automatiquement par Vercel (celle-là seule se met à jour toute seule à
   chaque `vercel --prod`). **Après un futur redéploiement du frontend, refaire l'alias**

@@ -22,7 +22,17 @@ Points à connaître sur l'hébergement gratuit actuel :
   normales. Passer sur un plan payant Render supprime cette veille, si ça devient gênant.
 - **Aiven (plan gratuit)** : 1 Go de stockage, largement suffisant pour démarrer.
 - Un push sur `main` (GitHub) redéploie automatiquement le frontend (Vercel) et l'API (Render) —
-  aucune action manuelle nécessaire après un `git push`.
+  aucune action manuelle nécessaire après un `git push`. **Vérifié en marche depuis le 14/09** (un
+  bug de configuration a fait échouer silencieusement tous les déploiements git jusque-là, voir
+  ci-dessous — c'est corrigé).
+- Projet Vercel **`repwise`**, Root Directory = `frontend` (essentiel : sans ça, un déploiement
+  déclenché par un `git push` clone tout le monorepo et essaie de builder depuis la racine, qui
+  n'a pas `vite` en dépendance → échec `vite: command not found`). Si tu dois un jour redéployer
+  le frontend à la main (`vercel --prod`) : lance la commande **depuis la racine du dépôt**
+  (`muscu-app/`, pas `muscu-app/frontend/`) — le dossier est lié au projet `repwise` à cet endroit
+  (`.vercel/project.json`), et `Root Directory: frontend` s'interprète relativement à cette racine.
+  Lancer `vercel --prod` depuis `frontend/` directement échoue maintenant (cherche
+  `frontend/frontend`, qui n'existe pas).
 - **`getrepwise.vercel.app`** est un alias propre posé à la main (`vercel alias set`) par-dessus
   l'URL générée automatiquement par Vercel (`frontend-topaz-eta-gr0kpynvtl.vercel.app`, moche mais
   toujours fiable). Contrairement à cette dernière, l'alias propre **ne se met pas à jour tout
