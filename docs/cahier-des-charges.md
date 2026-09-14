@@ -220,7 +220,7 @@ Demande : « une option qui permet de changer la couleur de fond et de la nav ba
 ## 8. Monétisation
 
 - Phase 1 (lancement) : app 100% gratuite pour construire une base d'utilisateurs et du bouche-à-oreille
-- Phase 2 (**en cours de lancement**) : publicité display (Google AdSense) sur les pages à fort trafic (calculateur en accès libre) — **compte AdSense à créer (pas encore fait)**, plus une bannière de consentement cookies (obligatoire en France pour la pub Google). Blocage externe : la création du compte AdSense est une démarche propre à l'utilisateur (identité, site déjà en ligne, validation Google) — aucune action côté code n'est possible tant qu'il n'existe pas ; le code de la bannière de consentement et l'intégration des emplacements publicitaires pourront être préparés dès que le compte existe.
+- Phase 2 (**fait, 14/09**) : publicité display (Google AdSense, compte créé par l'utilisateur — `ca-pub-9846502233003678`) sur le calculateur (page à fort trafic en accès libre), avec bannière de consentement cookies RGPD — voir README « Monétisation (AdSense) » pour le détail technique. Auto ads (Google choisit lui-même les emplacements) plutôt que des emplacements fixes, faute d'unité publicitaire précise fournie dans le cahier.
 - Phase 3 : version premium sans pub + fonctions avancées, et/ou affiliation ciblée (compléments, matériel) intégrée intelligemment selon le profil de l'utilisateur — **nécessite un compte Stripe**
 
 ## 9. Roadmap de build (ordre à suivre avec Claude Code)

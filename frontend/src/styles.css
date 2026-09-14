@@ -157,6 +157,43 @@ h2 {
   color: var(--accent);
 }
 
+/* Consentement cookies publicitaires (AdSense, cahier §8) : bandeau fixe en bas, au-dessus de
+   tout (z-index proche de la pilule de nav) tant qu'aucun choix n'est enregistré. */
+.bandeau-consentement {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 98;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+  background: var(--surface);
+  border-top: 1px solid var(--bordure);
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 0.3);
+}
+
+.bandeau-consentement p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.bandeau-consentement a {
+  font-weight: 600;
+  color: var(--accent-clair);
+}
+
+.bandeau-consentement-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
 .bouton-discret {
   flex-shrink: 0;
   padding: 7px 12px;

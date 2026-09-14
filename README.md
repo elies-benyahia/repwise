@@ -254,6 +254,36 @@ testés à travers Vercel → Render → Aiven, tout fonctionne).
 Domaine définitif : repwise.fr (registrar .fr, Vercel ne les vend pas) ou getrepwise.app — libres
 au 12/09/2026, pas encore acheté.
 
+## Monétisation (AdSense)
+
+Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
+(`ca-pub-9846502233003678`). Décisions techniques (pas précisées dans le cahier) :
+
+- **Scope limité au calculateur** (`/`, page publique à fort trafic visée par le cahier) plutôt
+  qu'au site entier : chargé/déclenché uniquement dans `Calculateur.jsx`, jamais sur les pages où
+  l'utilisateur suit ses séances — annonces qui financent le site sans polluer l'usage quotidien
+  de l'app pour un compte connecté.
+- **Auto ads** (juste le tag `<script>` du compte, `frontend/src/lib/adsense.js`) plutôt que des
+  emplacements `<ins>` fixes : le cahier ne fournissait pas d'identifiant d'unité publicitaire
+  précis (`data-ad-slot`), et Auto ads est l'intégration standard actuelle de Google (il choisit
+  lui-même où placer les annonces sur la page). Le script est injecté dynamiquement en JS
+  (`document.createElement('script')`), pas statiquement dans `index.html` — sinon il se
+  chargerait sur toutes les pages, contredisant le scope ci-dessus.
+- **Bannière de consentement RGPD** (`BandeauConsentement.jsx`, obligatoire en France pour la pub
+  Google, cahier §8) : affichée site-wide (pas juste sur le calculateur, pour prévenir avant que
+  l'utilisateur y arrive) tant qu'aucun choix n'est enregistré. Le script AdSense n'est **jamais**
+  chargé avant un clic sur « Accepter » — aucun cookie publicitaire n'est donc posé par défaut.
+  Choix stocké en `localStorage` (`frontend/src/lib/consentement.js`, `ConsentementPubContext.jsx`
+  — même patron que le thème de couleur), pas en base : purement un réglage client, marche pour
+  les invités, aucune notion de compte.
+- **Limite assumée** : c'est un bandeau maison (accepter/refuser), pas une plateforme de gestion du
+  consentement certifiée IAB TCF. Suffisant pour le RGPD (consentement explicite avant tout dépôt
+  de cookie publicitaire), mais Google recommande pour l'EEE d'utiliser en plus son propre outil
+  « Privacy & messaging » (Funding Choices) dans le dashboard AdSense — pas fait, nécessite une
+  configuration côté compte AdSense de l'utilisateur, pas quelque chose que le code peut résoudre.
+- `/confidentialite` documente précisément ce que Google peut recevoir si l'utilisateur accepte
+  (voir la page).
+
 ## Avancement (roadmap §9)
 
 - [x] 1. Schéma de base de données (inclut bibliothèque, feedback, programmes, rangs)
@@ -277,8 +307,8 @@ au 12/09/2026, pas encore acheté.
   réglable (vert/bleu/rouge/violet) sur `/profil`, bibliothèque de ~150 aliments courants pour une
   vraie autocomplétion (Open Food Facts seul étant pauvre sur les aliments bruts), mot de passe
   oublié, pages légales, et **mise en ligne** (Vercel + Render + Aiven, voir DEPLOY.md)
-- [ ] 12. Monétisation (V3) — **en cours de lancement** : compte AdSense à créer par toi (pas
-  encore fait, blocage externe) + bannière de consentement RGPD, puis Stripe pour la phase 3
+- [x] 12. Monétisation (V3), phase 2 — Google AdSense sur le calculateur + bannière de consentement
+  RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
 
 ### Checklist avant mise en ligne (audit du 14/09)

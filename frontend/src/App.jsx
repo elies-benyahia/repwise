@@ -1,10 +1,12 @@
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router';
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
+import BandeauConsentement from './components/BandeauConsentement.jsx';
 import Navigation from './components/Navigation.jsx';
 import RouteAdmin from './components/RouteAdmin.jsx';
 import RouteProtegee from './components/RouteProtegee.jsx';
 import GhostFibers from './components/reactbits/GhostFibers.jsx';
 import GradualBlur from './components/reactbits/GradualBlur.jsx';
+import { ConsentementPubProvider } from './consentement/ConsentementPubContext.jsx';
 import { ThemeCouleurProvider, useThemeCouleur } from './theme/ThemeCouleurContext.jsx';
 import { THEMES_COULEUR } from './lib/theme.js';
 import Accueil from './pages/Accueil.jsx';
@@ -39,52 +41,55 @@ export default function App() {
   return (
     <BrowserRouter>
       <ThemeCouleurProvider>
-        <AuthProvider>
-          {/* Fond animé (React Bits, cahier §7) : retour utilisateur du hero v4, généralisé à tout
-              le site plutôt que gardé propre à la page d'accueil publique — fixed, derrière tout
-              (z-index négatif), une seule instance WebGL pour toute l'app. */}
-          <FondAnime />
-          {/* PillNav (React Bits, cahier §7) flotte en position fixed au-dessus de tout : le logo
-              et les onglets sont rendus par Navigation.jsx lui-même, pas ici. */}
-          <Navigation />
-          {/* Flou de bord discret en haut/bas de page (React Bits, cahier §7) : purement cosmétique.
-              zIndex volontairement bas (+100 pour target="page" → 50) pour rester SOUS la pilule de
-              navigation (z-index 99) : sinon le flou s'applique aussi à la pilule elle-même. */}
-          <GradualBlur preset="page-header" strength={1.2} height="4.5rem" zIndex={-50} />
-          <GradualBlur preset="page-footer" strength={1.2} height="4.5rem" zIndex={-50} />
-          <div className="contenu-sous-nav">
-            <BandeauInvite />
-            <main className="conteneur">
-              <Routes>
-                <Route path="/" element={<Calculateur />} />
-                <Route path="/feedback" element={<Feedback />} />
-                <Route path="/credits" element={<Credits />} />
-                <Route path="/mentions-legales" element={<MentionsLegales />} />
-                <Route path="/confidentialite" element={<Confidentialite />} />
-                <Route path="/bienvenue" element={<Bienvenue />} />
-                <Route path="/connexion" element={<Authentification mode="connexion" />} />
-                <Route path="/inscription" element={<Authentification mode="inscription" />} />
-                <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
-                <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
-                <Route path="/accueil" element={protegee(<Accueil />)} />
-                <Route path="/calendrier" element={protegee(<Calendrier />)} />
-                <Route path="/seance/nouvelle" element={protegee(<PageSeance />)} />
-                <Route path="/seance/:id" element={protegee(<PageSeance />)} />
-                <Route path="/journal" element={protegee(<Journal />)} />
-                <Route path="/exercices" element={protegee(<Exercices />)} />
-                <Route path="/programmes" element={protegee(<Programmes />)} />
-                <Route path="/programmes/:id" element={protegee(<Programme />)} />
-                <Route path="/profil" element={protegee(<Profil />)} />
-                <Route path="/progression" element={protegee(<Progression />)} />
-                <Route path="/classement" element={protegee(<Classement />)} />
-                <Route path="/classement/:id" element={protegee(<JoueurClassement />)} />
-                <Route path="/rang" element={protegee(<Rang />)} />
-                <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
-              </Routes>
-              <PiedDePage />
-            </main>
-          </div>
-        </AuthProvider>
+        <ConsentementPubProvider>
+          <AuthProvider>
+            {/* Fond animé (React Bits, cahier §7) : retour utilisateur du hero v4, généralisé à tout
+                le site plutôt que gardé propre à la page d'accueil publique — fixed, derrière tout
+                (z-index négatif), une seule instance WebGL pour toute l'app. */}
+            <FondAnime />
+            {/* PillNav (React Bits, cahier §7) flotte en position fixed au-dessus de tout : le logo
+                et les onglets sont rendus par Navigation.jsx lui-même, pas ici. */}
+            <Navigation />
+            {/* Flou de bord discret en haut/bas de page (React Bits, cahier §7) : purement cosmétique.
+                zIndex volontairement bas (+100 pour target="page" → 50) pour rester SOUS la pilule de
+                navigation (z-index 99) : sinon le flou s'applique aussi à la pilule elle-même. */}
+            <GradualBlur preset="page-header" strength={1.2} height="4.5rem" zIndex={-50} />
+            <GradualBlur preset="page-footer" strength={1.2} height="4.5rem" zIndex={-50} />
+            <div className="contenu-sous-nav">
+              <BandeauInvite />
+              <main className="conteneur">
+                <Routes>
+                  <Route path="/" element={<Calculateur />} />
+                  <Route path="/feedback" element={<Feedback />} />
+                  <Route path="/credits" element={<Credits />} />
+                  <Route path="/mentions-legales" element={<MentionsLegales />} />
+                  <Route path="/confidentialite" element={<Confidentialite />} />
+                  <Route path="/bienvenue" element={<Bienvenue />} />
+                  <Route path="/connexion" element={<Authentification mode="connexion" />} />
+                  <Route path="/inscription" element={<Authentification mode="inscription" />} />
+                  <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+                  <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
+                  <Route path="/accueil" element={protegee(<Accueil />)} />
+                  <Route path="/calendrier" element={protegee(<Calendrier />)} />
+                  <Route path="/seance/nouvelle" element={protegee(<PageSeance />)} />
+                  <Route path="/seance/:id" element={protegee(<PageSeance />)} />
+                  <Route path="/journal" element={protegee(<Journal />)} />
+                  <Route path="/exercices" element={protegee(<Exercices />)} />
+                  <Route path="/programmes" element={protegee(<Programmes />)} />
+                  <Route path="/programmes/:id" element={protegee(<Programme />)} />
+                  <Route path="/profil" element={protegee(<Profil />)} />
+                  <Route path="/progression" element={protegee(<Progression />)} />
+                  <Route path="/classement" element={protegee(<Classement />)} />
+                  <Route path="/classement/:id" element={protegee(<JoueurClassement />)} />
+                  <Route path="/rang" element={protegee(<Rang />)} />
+                  <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
+                </Routes>
+                <PiedDePage />
+              </main>
+            </div>
+            <BandeauConsentement />
+          </AuthProvider>
+        </ConsentementPubProvider>
       </ThemeCouleurProvider>
     </BrowserRouter>
   );

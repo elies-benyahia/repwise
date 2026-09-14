@@ -114,6 +114,12 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   Protection SSO du projet Vercel désactivée (`vercel project protection disable repwise --sso`) —
   sans ça, tout alias autre que l'URL de prod canonique retombe derrière un mur de connexion
   Vercel, invisible pour un visiteur normal.
+- Monétisation AdSense (`ca-pub-9846502233003678`, compte créé le 14/09) : scope limité à
+  `Calculateur.jsx` (jamais chargé ailleurs), script injecté en JS seulement si
+  `useConsentementPub().consentement === 'accepte'` (`frontend/src/lib/adsense.js`) — **jamais**
+  ajouter le tag AdSense statiquement dans `index.html`, ça casserait à la fois le scope et le
+  consentement RGPD. `ConsentementPubContext`/`BandeauConsentement` suivent le même patron que
+  `ThemeCouleurContext` (localStorage, pas de compte).
 - Email transactionnel (réinitialisation de mot de passe uniquement pour l'instant) :
   `backend/src/email/envoyer.js`, appel `fetch` direct sur l'API REST de Resend (pas de SDK/lib
   npm ajoutée, même logique que le proxy Open Food Facts). Sans `RESEND_API_KEY` : le contenu de

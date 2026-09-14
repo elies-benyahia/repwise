@@ -4,6 +4,8 @@ import { useAuth } from '../auth/AuthContext.jsx';
 import ChampNumerique from '../components/ChampNumerique.jsx';
 import TextLoop from '../components/reactbits/TextLoop.jsx';
 import ResultatMacros from '../components/ResultatMacros.jsx';
+import { useConsentementPub } from '../consentement/ConsentementPubContext.jsx';
+import { chargerAdSense } from '../lib/adsense.js';
 import { NIVEAUX_ACTIVITE, OBJECTIFS, calculerBesoins, validerProfil } from '../lib/calculs.js';
 import { formaterNombre, versNombre } from '../lib/format.js';
 import { profilComplet } from '../lib/profil.js';
@@ -36,6 +38,13 @@ export default function Calculateur() {
   const [afficherErreurs, setAfficherErreurs] = useState(false);
   const [resultatDemande, setResultatDemande] = useState(false);
   const resultatRef = useRef(null);
+
+  // Monétisation (cahier §8) : AdSense seulement ici (page publique à fort trafic), et seulement
+  // si l'utilisateur a accepté les cookies publicitaires (BandeauConsentement) — jamais avant.
+  const { consentement } = useConsentementPub();
+  useEffect(() => {
+    if (consentement === 'accepte') chargerAdSense();
+  }, [consentement]);
 
   // Profil : pré-remplit les mesures encore vides, sans écraser une saisie en cours. Sexe, activité
   // et objectif reprennent ceux du dernier objectif enregistré (ces choix ont toujours une valeur).

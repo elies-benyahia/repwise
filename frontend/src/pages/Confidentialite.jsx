@@ -33,8 +33,10 @@ export default function Confidentialite() {
       <h2>Pourquoi ces données</h2>
       <p>
         Uniquement pour faire fonctionner l'app : calculer tes besoins caloriques, afficher ton
-        historique, ton rang et tes graphiques de progression. Aucune donnée n'est vendue ni
-        partagée à des fins publicitaires.
+        historique, ton rang et tes graphiques de progression. Rien de tout ça (compte, séances,
+        journal, mesures) n'est vendu ni transmis à Google ou à qui que ce soit à des fins
+        publicitaires — voir « Publicité » ci-dessous pour ce que Google reçoit séparément si tu
+        acceptes les cookies publicitaires sur la page calculateur.
       </p>
 
       <h2>Qui peut voir quoi</h2>
@@ -52,23 +54,38 @@ export default function Confidentialite() {
           <a href="https://world.openfoodfacts.org" target="_blank" rel="noreferrer">Open Food Facts</a> :
           quand tu cherches un aliment, ton terme de recherche leur est transmis (pas ton identité).
         </li>
-        <li>
-          [Une fois choisi] Un hébergeur pour le site et un pour l'API/la base de données — voir
-          les <a href="/mentions-legales">mentions légales</a>.
-        </li>
+        <li>Vercel (hébergement du site) et Render (hébergement de l'API et de la base de données).</li>
         <li>
           [Si activé] Resend, pour l'envoi de l'email de réinitialisation de mot de passe : ton
           adresse email leur est transmise uniquement au moment de cet envoi.
         </li>
+        <li>
+          Google AdSense, uniquement sur la page calculateur et uniquement si tu as accepté les
+          cookies publicitaires (bandeau affiché à ta première visite) — voir « Publicité »
+          ci-dessous.
+        </li>
       </ul>
+
+      <h2>Publicité (Google AdSense)</h2>
+      <p>
+        La page calculateur (accessible sans compte) affiche des publicités Google AdSense, qui
+        financent la gratuité du site. Elles ne s'affichent que si tu cliques « Accepter » sur le
+        bandeau de consentement présenté à ta première visite — sans ce choix, aucun script
+        publicitaire ne se charge et aucun cookie publicitaire n'est posé. Si tu acceptes, Google
+        peut poser ses propres cookies et traiter certaines données (adresse IP approximative,
+        pages vues) pour choisir et mesurer les annonces affichées, selon sa propre politique de
+        confidentialité (<a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">policies.google.com/privacy</a>).
+        Tu peux retirer ton consentement à tout moment en effaçant les données de ce site dans ton
+        navigateur (le bandeau réapparaîtra), et gérer la personnalisation des annonces Google sur{' '}
+        <a href="https://adssettings.google.com" target="_blank" rel="noreferrer">adssettings.google.com</a>.
+      </p>
 
       <h2>Cookies</h2>
       <p>
-        Un seul cookie est utilisé, indispensable au fonctionnement du site : il garde ta session
-        connectée (30 jours). Il n'est ni publicitaire ni utilisé pour te pister ailleurs — aucune
-        bannière de consentement n'est donc nécessaire pour lui. [À mettre à jour si une régie
-        publicitaire type Google AdSense est activée un jour : voir cahier §8, ça demandera alors
-        une vraie bannière de consentement cookies.]
+        Le cookie de session (indispensable, garde ta connexion active 30 jours) n'est ni
+        publicitaire ni utilisé pour te pister ailleurs. Les seuls cookies publicitaires possibles
+        sont ceux de Google AdSense, posés uniquement si tu les as acceptés — voir « Publicité »
+        ci-dessus.
       </p>
 
       <h2>Sécurité</h2>
