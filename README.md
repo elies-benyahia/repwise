@@ -242,14 +242,17 @@ cookie — il suffira de le lire aussi dans `chargerSession`.
 
 ## Déploiement
 
-Domaine : repwise.fr (registrar .fr, Vercel ne les vend pas) ou getrepwise.app — libres au 12/09/2026.
+**En ligne depuis le 14/09** : frontend sur Vercel, API sur Render, MySQL sur Aiven (tous gratuits
+pour l'instant) — état à jour, URLs et ce qu'il reste (email transactionnel, domaine, pages
+légales) dans **[DEPLOY.md](DEPLOY.md)** à la racine du dépôt.
 
-Le site et l'API doivent être servis **sur le même domaine** pour que le cookie de session reste
-first-party (Safari bloque les cookies tiers) : `frontend/vercel.json` (déjà dans le dépôt) fait
-ce rewrite `/api/*` + `/uploads/*` vers l'API, avec un domaine placeholder à remplacer une fois
-l'API déployée. Marche à suivre complète (GitHub, Railway pour l'API + MySQL, Vercel pour le
-frontend, Resend pour l'email, achat de domaine) : voir **[DEPLOY.md](DEPLOY.md)** à la racine du
-dépôt — chaque étape qui reste demande un compte que je ne peux pas créer à ta place.
+Le site et l'API sont servis **sur le même domaine apparent** pour que le cookie de session reste
+first-party (Safari bloque les cookies tiers) : `frontend/vercel.json` fait un rewrite `/api/*` +
+`/uploads/*` vers l'URL Render — vérifié en production (inscription/connexion/cookie de session
+testés à travers Vercel → Render → Aiven, tout fonctionne).
+
+Domaine définitif : repwise.fr (registrar .fr, Vercel ne les vend pas) ou getrepwise.app — libres
+au 12/09/2026, pas encore acheté.
 
 ## Avancement (roadmap §9)
 
@@ -271,8 +274,9 @@ dépôt — chaque étape qui reste demande un compte que je ne peux pas créer 
   bug du fond animé « visible qu'en bas de page » corrigé), puis journal branché sur Open Food
   Facts, quêtes/points + page Rang, rôle admin + page Admin (statistiques d'usage), images
   d'exercices via wger.de + page `/credits`, badges de rang retravaillés, thème de couleur
-  réglable (vert/bleu/rouge/violet) sur `/profil`, et bibliothèque de ~150 aliments courants pour
-  une vraie autocomplétion (Open Food Facts seul étant pauvre sur les aliments bruts)
+  réglable (vert/bleu/rouge/violet) sur `/profil`, bibliothèque de ~150 aliments courants pour une
+  vraie autocomplétion (Open Food Facts seul étant pauvre sur les aliments bruts), mot de passe
+  oublié, pages légales, et **mise en ligne** (Vercel + Render + Aiven, voir DEPLOY.md)
 - [ ] 12. Monétisation (V3) — **en cours de lancement** : compte AdSense à créer par toi (pas
   encore fait, blocage externe) + bannière de consentement RGPD, puis Stripe pour la phase 3
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
@@ -303,32 +307,30 @@ autre).
   production (dont `DEPLOY.md` dépend) et ne contient aucun secret : `!.env.example` ajouté pour
   qu'il reste suivi.
 
-**Fait dans la foulée (préparation au déploiement, 14/09)** :
-- **Dépôt git initialisé** (`git init` + premier commit sur `main`) — restait à faire depuis le
-  début du projet, bloquait tout déploiement.
-- **`frontend/vercel.json`** : rewrites `/api/*` et `/uploads/*` vers l'API (domaine à compléter
-  une fois l'hébergeur choisi), catch-all vers `index.html` pour le routage côté client.
+**Fait dans la foulée (préparation puis mise en ligne, 14/09)** :
+- **Dépôt git initialisé** et poussé sur GitHub (elies-benyahia/repwise) — restait à faire depuis
+  le début du projet, bloquait tout déploiement.
 - **Réinitialisation de mot de passe** codée de bout en bout : `POST /api/auth/mot-de-passe-oublie`
   + `POST /api/auth/reinitialiser-mot-de-passe` (jeton à usage unique, empreinte SHA-256 en base
   comme les sessions, expire en 1h, invalide toutes les sessions ouvertes au moment du changement),
   pages `/mot-de-passe-oublie` et `/reinitialiser-mot-de-passe`, lien depuis `/connexion`. Email
-  envoyé via l'API REST de Resend (`backend/src/email/envoyer.js`, pas de dépendance npm de plus) —
-  **nécessite `RESEND_API_KEY`** (voir DEPLOY.md) ; sans elle, le lien est juste affiché dans les
-  logs serveur, la fonctionnalité reste testable mais n'envoie rien de réel.
-- **Pages `/mentions-legales` et `/confidentialite`** créées et liées en pied de page — contenu
-  fidèle à ce que le code fait réellement, mais avec des **placeholders entre crochets** (ton
-  identité, ton adresse, tes hébergeurs) que je ne peux pas deviner à ta place.
-- **`DEPLOY.md`** (racine du dépôt) : marche à suivre complète et dans l'ordre pour les étapes qui
-  restent — GitHub, Railway (API + MySQL), Vercel (frontend), Resend (email), achat de domaine.
-  Toutes nécessitent un compte/paiement que je ne peux pas faire à ta place.
+  envoyé via l'API REST de Resend (`backend/src/email/envoyer.js`) — reste à créer le compte
+  Resend (voir DEPLOY.md) ; sans lui, le lien est juste loggé côté serveur au lieu d'être envoyé.
+- **Pages `/mentions-legales` et `/confidentialite`** créées, déployées, liées en pied de page —
+  contenu fidèle à ce que le code fait réellement, avec des **placeholders entre crochets** (ton
+  identité, ton adresse) que je ne peux pas deviner à ta place.
+- **Site en ligne** : API sur Render (`repwise-backend`, plan gratuit) connectée à une base MySQL
+  Aiven (plan gratuit, schéma initialisé), frontend sur Vercel avec `frontend/vercel.json`
+  pointant vers l'URL Render réelle. Configuré directement via les API REST de Render/Aiven et le
+  CLI Vercel (comptes créés par l'utilisateur, connexions/tokens fournis en session) plutôt que
+  par la main sur chaque dashboard. Testé en production de bout en bout : inscription, connexion,
+  cookie de session first-party à travers le rewrite Vercel → Render. URLs et détail des comptes
+  dans **[DEPLOY.md](DEPLOY.md)**.
 
-**Toujours à faire par toi (voir DEPLOY.md pour le détail)** : pousser le dépôt sur GitHub, créer
-les comptes Railway/Vercel/Resend et suivre leurs étapes, acheter le domaine, compléter les
-placeholders des pages légales. Points à ne pas oublier une fois l'hébergeur de l'API choisi :
-positionner `NODE_ENV=production` (sinon le cookie de session repart en `secure: false`) et
-vérifier qu'il tourne en process long-vivant, pas en fonctions serverless (le job de maintenance
-quotidien de `server.js`, `setInterval`, a besoin d'un process qui ne s'éteint jamais entre deux
-requêtes).
+**Reste (voir DEPLOY.md)** : compte Resend pour activer l'envoi réel des emails, achat du domaine
+définitif, compléter les placeholders des pages légales. Le plan gratuit Render met l'API en veille
+après inactivité (premier appel après une veille : ~30-50s pour redémarrer) — passer sur un plan
+payant Render supprime ça si besoin.
 
 ### Restent à construire (notés dans le cahier des charges, non bloquants)
 

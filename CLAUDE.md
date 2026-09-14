@@ -95,11 +95,18 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   laisse la valeur par défaut) ; penser à vite.config.js si le chemin `/uploads` change.
   **`backend/uploads/avatars/` est gitignoré (contenu utilisateur) — `backend/uploads/exercices/`
   NE DOIT PAS l'être (asset statique livré avec l'app, voir .gitignore et README §checklist).**
-- Dépôt git initialisé le 14/09 (`main`, premier commit) ; `frontend/vercel.json` et `DEPLOY.md`
-  existent. Restent bloquants pour une mise en ligne publique, mais demandent des comptes que je
-  ne peux pas créer (voir DEPLOY.md et README « Checklist avant mise en ligne ») : push GitHub,
-  comptes Railway/Vercel/Resend, achat de domaine, et compléter les placeholders entre crochets
-  des pages `/mentions-legales`/`/confidentialite`.
+- **Site en ligne depuis le 14/09** (voir DEPLOY.md pour les URLs et le détail des comptes) :
+  dépôt GitHub elies-benyahia/repwise, API sur Render, MySQL sur Aiven (SSL requis, voir
+  `DB_SSL_CA` dans config.js/pool.js — certificat CA en PEM complet dans la variable, pas un
+  chemin de fichier), frontend sur Vercel. Render/Aiven configurés via leurs API REST directement
+  (tokens fournis par l'utilisateur en session, jamais stockés dans le dépôt), Vercel via son CLI
+  (`vercel login` ouvre un flow OAuth navigateur). Mettre à jour une base de production : relancer
+  `npm run db:init` avec les `DB_*`/`DB_SSL_CA` de la vraie base en variables d'environnement (pas
+  besoin d'installer le CLI Aiven, l'API suffit pour récupérer host/port, mais le **mot de passe
+  est toujours redacté par l'API même avec un token complet** — il faut le récupérer à la main
+  dans le dashboard Aiven, aucun endpoint ne le renvoie en clair, pas même après une rotation).
+  Restent (comptes/paiements que je ne peux pas faire à la place de l'utilisateur) : compte Resend
+  pour activer l'envoi réel des emails, achat du domaine, placeholders des pages légales.
 - Email transactionnel (réinitialisation de mot de passe uniquement pour l'instant) :
   `backend/src/email/envoyer.js`, appel `fetch` direct sur l'API REST de Resend (pas de SDK/lib
   npm ajoutée, même logique que le proxy Open Food Facts). Sans `RESEND_API_KEY` : le contenu de

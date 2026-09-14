@@ -17,5 +17,9 @@ export const config = {
     user: env.DB_USER ?? 'root',
     password: env.DB_PASSWORD ?? '',
     database: env.DB_NAME ?? 'repwise',
+    // Hébergeurs managés (Aiven, PlanetScale...) exigent TLS et fournissent un certificat CA à
+    // épingler — passé en entier (PEM) dans la variable, pas un chemin de fichier (plus simple à
+    // coller dans le dashboard d'un hébergeur). Absent en local (MySQL de Laragon, sans TLS).
+    ssl: env.DB_SSL_CA ? { ca: env.DB_SSL_CA } : undefined,
   },
 };

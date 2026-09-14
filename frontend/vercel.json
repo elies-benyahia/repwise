@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://TON-BACKEND.exemple.com/api/$1" },
-    { "source": "/uploads/(.*)", "destination": "https://TON-BACKEND.exemple.com/uploads/$1" },
+    { "source": "/api/(.*)", "destination": "https://repwise-backend.onrender.com/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "https://repwise-backend.onrender.com/uploads/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
