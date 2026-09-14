@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://repwise-backend.onrender.com/api/$1" },
     { "source": "/uploads/(.*)", "destination": "https://repwise-backend.onrender.com/uploads/$1" },
+    { "source": "/ads.txt", "destination": "/ads.txt" },
+    { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
