@@ -7,7 +7,7 @@
 | Code sur GitHub | ✅ Fait | [github.com/elies-benyahia/repwise](https://github.com/elies-benyahia/repwise) |
 | API backend | ✅ Fait | Render (plan gratuit) — https://repwise-backend.onrender.com |
 | Base de données | ✅ Fait | MySQL Aiven (plan gratuit), schéma initialisé (68 exercices, 168 aliments) |
-| Frontend | ✅ Fait | Vercel — https://frontend-topaz-eta-gr0kpynvtl.vercel.app |
+| Frontend | ✅ Fait | Vercel — **https://getrepwise.vercel.app** |
 | Email (mot de passe oublié) | ⬜ À faire | Compte Resend à créer (§1 ci-dessous) |
 | Domaine | ⬜ À faire | repwise.fr ou getrepwise.app à acheter (§2) |
 | Pages légales | ⬜ À faire | Placeholders à compléter (§3) |
@@ -23,6 +23,14 @@ Points à connaître sur l'hébergement gratuit actuel :
 - **Aiven (plan gratuit)** : 1 Go de stockage, largement suffisant pour démarrer.
 - Un push sur `main` (GitHub) redéploie automatiquement le frontend (Vercel) et l'API (Render) —
   aucune action manuelle nécessaire après un `git push`.
+- **`getrepwise.vercel.app`** est un alias propre posé à la main (`vercel alias set`) par-dessus
+  l'URL générée automatiquement par Vercel (`frontend-topaz-eta-gr0kpynvtl.vercel.app`, moche mais
+  toujours fiable). Contrairement à cette dernière, l'alias propre **ne se met pas à jour tout
+  seul** sur un futur déploiement — à refaire (`vercel alias set <nouvelle-url-de-déploiement>
+  getrepwise.vercel.app`) après un prochain `vercel --prod`, sinon il continue de pointer sur
+  l'ancienne version. La protection SSO de Vercel (activée par défaut sur les alias autres que
+  l'URL de prod canonique) a aussi été désactivée pour le projet (`vercel project protection
+  disable repwise --sso`), sinon les visiteurs tombaient sur un mur de connexion Vercel.
 
 ## 1. Email transactionnel (réinitialisation de mot de passe)
 

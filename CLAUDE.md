@@ -107,6 +107,13 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   dans le dashboard Aiven, aucun endpoint ne le renvoie en clair, pas même après une rotation).
   Restent (comptes/paiements que je ne peux pas faire à la place de l'utilisateur) : compte Resend
   pour activer l'envoi réel des emails, achat du domaine, placeholders des pages légales.
+- URL propre du frontend (**getrepwise.vercel.app**) : alias manuel (`vercel alias set`) posé
+  par-dessus l'URL générée automatiquement par Vercel (celle-là seule se met à jour toute seule à
+  chaque `vercel --prod`). **Après un futur redéploiement du frontend, refaire l'alias**
+  (`vercel alias set <nouvelle-url> getrepwise.vercel.app`) sinon il pointe sur l'ancienne version.
+  Protection SSO du projet Vercel désactivée (`vercel project protection disable repwise --sso`) —
+  sans ça, tout alias autre que l'URL de prod canonique retombe derrière un mur de connexion
+  Vercel, invisible pour un visiteur normal.
 - Email transactionnel (réinitialisation de mot de passe uniquement pour l'instant) :
   `backend/src/email/envoyer.js`, appel `fetch` direct sur l'API REST de Resend (pas de SDK/lib
   npm ajoutée, même logique que le proxy Open Food Facts). Sans `RESEND_API_KEY` : le contenu de
