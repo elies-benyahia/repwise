@@ -66,6 +66,20 @@ CREATE TABLE IF NOT EXISTS sessions (
   KEY idx_sessions_expiration (date_expiration)
 ) ENGINE=InnoDB;
 
+-- Réinitialisation de mot de passe (lien envoyé par email, backend/src/auth/routes.js) : même
+-- principe que sessions (empreinte SHA-256 du jeton, jamais le jeton en clair), mais 1h de durée
+-- de vie et usage unique (supprimée dès qu'elle sert). Sans rapport avec les invités (est_invite),
+-- qui n'ont pas de mot de passe.
+CREATE TABLE IF NOT EXISTS reinitialisations_mot_de_passe (
+  id              CHAR(64) PRIMARY KEY,
+  utilisateur_id  INT UNSIGNED NOT NULL,
+  date_creation   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  date_expiration DATETIME NOT NULL,
+  CONSTRAINT fk_reinitialisations_utilisateur FOREIGN KEY (utilisateur_id)
+    REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  KEY idx_reinitialisations_utilisateur (utilisateur_id)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS seances (
   id                INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   utilisateur_id    INT UNSIGNED NOT NULL,

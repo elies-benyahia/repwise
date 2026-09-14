@@ -95,10 +95,21 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   laisse la valeur par défaut) ; penser à vite.config.js si le chemin `/uploads` change.
   **`backend/uploads/avatars/` est gitignoré (contenu utilisateur) — `backend/uploads/exercices/`
   NE DOIT PAS l'être (asset statique livré avec l'app, voir .gitignore et README §checklist).**
-- Pas de dépôt git sur ce dossier, pas de config de déploiement (`vercel.json`), pas de
-  réinitialisation de mot de passe, pas de page légale (mentions légales/confidentialité) : tout
-  bloquant pour une mise en ligne publique, détaillé dans README « Checklist avant mise en
-  ligne » (audit du 14/09) — ne pas les considérer résolus sans redemander à l'utilisateur.
+- Dépôt git initialisé le 14/09 (`main`, premier commit) ; `frontend/vercel.json` et `DEPLOY.md`
+  existent. Restent bloquants pour une mise en ligne publique, mais demandent des comptes que je
+  ne peux pas créer (voir DEPLOY.md et README « Checklist avant mise en ligne ») : push GitHub,
+  comptes Railway/Vercel/Resend, achat de domaine, et compléter les placeholders entre crochets
+  des pages `/mentions-legales`/`/confidentialite`.
+- Email transactionnel (réinitialisation de mot de passe uniquement pour l'instant) :
+  `backend/src/email/envoyer.js`, appel `fetch` direct sur l'API REST de Resend (pas de SDK/lib
+  npm ajoutée, même logique que le proxy Open Food Facts). Sans `RESEND_API_KEY` : le contenu de
+  l'email est juste loggé en console (`console.log`) au lieu d'échouer — permet de tester tout le
+  flux (jeton, expiration, hachage) sans dépendance réseau, y compris dans les tests (voir
+  `backend/test/mot-de-passe-oublie.test.js`, qui capture ce `console.log` pour en extraire le
+  jeton plutôt que de mocker le module).
+- Réinitialisation de mot de passe : même patron que les sessions (jeton aléatoire, seule son
+  empreinte SHA-256 va en base, `sessions.js#empreinte` exportée et réutilisée). Un mot de passe
+  changé doit toujours révoquer les sessions existantes de ce compte (vol de session).
 - Unités stockées : kg, cm, secondes, kcal, grammes.
 - Mobile-first : vérifier chaque écran à ~390px de large.
 - Logique métier dans des modules purs sous frontend/src/lib, testée avec `npm test` (node:test).

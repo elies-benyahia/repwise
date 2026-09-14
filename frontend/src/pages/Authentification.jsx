@@ -77,6 +77,9 @@ export default function Authentification({ mode }) {
 
       <form className="carte formulaire" onSubmit={soumettre} noValidate>
         {erreurGenerale && <p className="alerte" role="alert">{erreurGenerale}</p>}
+        {mode === 'connexion' && location.state?.motDePasseReinitialise && (
+          <p className="info" role="status">Mot de passe changé. Connecte-toi avec le nouveau.</p>
+        )}
         {mode === 'connexion' && estInvite && (
           <p className="info">
             Tu es en mode invité. Si tu te connectes à un compte existant, les données saisies en invité ne
@@ -127,6 +130,9 @@ export default function Authentification({ mode }) {
             <p id="motDePasse-aide" className="message-erreur">{erreurChamp('motDePasse')}</p>
           ) : (
             mode === 'inscription' && <p id="motDePasse-aide" className="aide">8 caractères minimum</p>
+          )}
+          {mode === 'connexion' && (
+            <Link to="/mot-de-passe-oublie" className="lien-mot-de-passe-oublie">Mot de passe oublié ?</Link>
           )}
         </div>
 

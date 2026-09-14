@@ -10,7 +10,9 @@ const DUREE_JOURS = 30;
 // régulièrement à la salle ne se fait jamais déconnecter.
 const SEUIL_RENOUVELLEMENT_JOURS = 15;
 
-const empreinte = (jeton) => createHash('sha256').update(jeton).digest('hex');
+// Exportée : réutilisée pour d'autres jetons à usage unique (réinitialisation de mot de passe,
+// auth/routes.js) — même principe, une empreinte SHA-256 en base plutôt que le jeton en clair.
+export const empreinte = (jeton) => createHash('sha256').update(jeton).digest('hex');
 
 const optionsCookie = {
   httpOnly: true,

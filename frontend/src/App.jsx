@@ -14,12 +14,16 @@ import Bienvenue from './pages/Bienvenue.jsx';
 import Calculateur from './pages/Calculateur.jsx';
 import Calendrier from './pages/Calendrier.jsx';
 import Classement from './pages/Classement.jsx';
+import Confidentialite from './pages/Confidentialite.jsx';
 import Credits from './pages/Credits.jsx';
 import Exercices from './pages/Exercices.jsx';
 import Feedback from './pages/Feedback.jsx';
 import JoueurClassement from './pages/JoueurClassement.jsx';
 import Journal from './pages/Journal.jsx';
+import MentionsLegales from './pages/MentionsLegales.jsx';
+import MotDePasseOublie from './pages/MotDePasseOublie.jsx';
 import Profil from './pages/Profil.jsx';
+import ReinitialiserMotDePasse from './pages/ReinitialiserMotDePasse.jsx';
 import Programme from './pages/Programme.jsx';
 import Programmes from './pages/Programmes.jsx';
 import Progression from './pages/Progression.jsx';
@@ -27,7 +31,7 @@ import Rang from './pages/Rang.jsx';
 import PageSeance from './pages/Seance.jsx';
 
 // Pages où le bandeau invité serait redondant avec ce que l'onboarding affiche déjà.
-const PAGES_ONBOARDING = ['/bienvenue', '/connexion', '/inscription'];
+const PAGES_ONBOARDING = ['/bienvenue', '/connexion', '/inscription', '/mot-de-passe-oublie', '/reinitialiser-mot-de-passe'];
 
 const protegee = (page) => <RouteProtegee>{page}</RouteProtegee>;
 
@@ -55,9 +59,13 @@ export default function App() {
                 <Route path="/" element={<Calculateur />} />
                 <Route path="/feedback" element={<Feedback />} />
                 <Route path="/credits" element={<Credits />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/confidentialite" element={<Confidentialite />} />
                 <Route path="/bienvenue" element={<Bienvenue />} />
                 <Route path="/connexion" element={<Authentification mode="connexion" />} />
                 <Route path="/inscription" element={<Authentification mode="inscription" />} />
+                <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+                <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
                 <Route path="/accueil" element={protegee(<Accueil />)} />
                 <Route path="/calendrier" element={protegee(<Calendrier />)} />
                 <Route path="/seance/nouvelle" element={protegee(<PageSeance />)} />
@@ -128,6 +136,10 @@ function PiedDePage() {
       <Link to="/feedback">Une idée ? Un bug ? Écris-nous</Link>
       <span aria-hidden="true"> · </span>
       <Link to="/credits">Crédits</Link>
+      <span aria-hidden="true"> · </span>
+      <Link to="/mentions-legales">Mentions légales</Link>
+      <span aria-hidden="true"> · </span>
+      <Link to="/confidentialite">Confidentialité</Link>
     </footer>
   );
 }

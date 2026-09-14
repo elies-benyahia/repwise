@@ -2,6 +2,10 @@ node_modules/
 dist/
 .env
 .env.*
+# .env.* exclut aussi le modèle .env.example par erreur (bug trouvé le 14/09) : il documente les
+# variables requises en production (DEPLOY.md en dépend) et ne contient aucun secret — il doit
+# rester suivi par git.
+!.env.example
 # Contenu généré par les utilisateurs (photos de profil) : jamais commité. Les images
 # d'exercices (backend/uploads/exercices/, wger.de) sont au contraire un asset statique livré
 # avec l'app — elles doivent rester suivies par git, sinon elles manquent au déploiement.

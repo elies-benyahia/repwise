@@ -272,9 +272,12 @@ Retours après le premier test utilisateur complet du site :
 - **Audit pré-lancement du 14/09** (voir README « Checklist avant mise en ligne » pour le détail) :
   code et sécurité déjà solides (mots de passe, sessions, requêtes SQL, rate-limiting — rien à
   corriger), deux bugs réels trouvés et corrigés (`.gitignore` qui aurait fait disparaître les
-  images d'exercices au déploiement, `robots.txt` manquant). Restent, tous bloquants pour un vrai
-  lancement public : aucun dépôt git (donc aucun déploiement possible tel quel), aucune
-  configuration de déploiement (`vercel.json` ou équivalent — l'hébergeur de l'API n'est pas encore
-  choisi), pas de réinitialisation de mot de passe (attend un choix de fournisseur d'email), et
-  aucune page légale (mentions légales/confidentialité, nécessaire vu les données personnelles
-  collectées).
+  images d'exercices au déploiement, `robots.txt` manquant).
+- **Préparation au déploiement, même jour, suite à "fait toutes les étapes pour poster le site"** :
+  dépôt git initialisé (premier commit), `frontend/vercel.json` écrit, réinitialisation de mot de
+  passe codée de bout en bout (email via Resend, `RESEND_API_KEY` à ajouter), pages
+  `/mentions-legales` et `/confidentialite` créées (contenu réel, placeholders entre crochets pour
+  ce que je ne peux pas deviner), et `DEPLOY.md` détaillant la marche à suivre pour tout le reste.
+  Restent, tous nécessitant un compte/paiement que je ne peux pas faire à ta place : pousser le
+  dépôt sur GitHub, créer les comptes Railway (API + MySQL)/Vercel (frontend)/Resend (email),
+  acheter le domaine, remplir les placeholders des pages légales avec tes vraies informations.

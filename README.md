@@ -228,27 +228,28 @@ Session en base + cookie `httpOnly` (pas de JWT dans le navigateur) :
 
 Pour protéger une route : `routeur.get('/…', exigerConnexion, …)` puis `req.utilisateur`.
 
+**Réinitialisation de mot de passe** (14/09) : `POST /api/auth/mot-de-passe-oublie` (email → même
+réponse que le compte existe ou non, pas d'énumération) génère un jeton à usage unique (même
+principe que les sessions : empreinte SHA-256 en base, table `reinitialisations_mot_de_passe`,
+expire en 1h) et envoie un lien par email via `backend/src/email/envoyer.js` (API REST de Resend,
+`RESEND_API_KEY` — sans elle, le lien est juste loggé côté serveur). `POST
+/api/auth/reinitialiser-mot-de-passe` (jeton + nouveau mot de passe) vérifie le jeton, change le
+hachage, **révoque toutes les sessions ouvertes** de ce compte (vol de session éventuel). Pages
+`/mot-de-passe-oublie` et `/reinitialiser-mot-de-passe`, lien depuis `/connexion`.
+
 App mobile (plus tard) : le même jeton pourra être envoyé en `Authorization: Bearer` au lieu du
 cookie — il suffira de le lire aussi dans `chargerSession`.
 
-## Déploiement (à faire)
+## Déploiement
 
 Domaine : repwise.fr (registrar .fr, Vercel ne les vend pas) ou getrepwise.app — libres au 12/09/2026.
 
-Le site et l'API doivent être servis **sur le même domaine** pour que le cookie de session
-reste first-party (Safari bloque les cookies tiers). Sur Vercel, ajouter `frontend/vercel.json` :
-
-```json
-{
-  "rewrites": [
-    { "source": "/api/:chemin*", "destination": "https://<URL-DE-L-API>/api/:chemin*" },
-    { "source": "/uploads/:chemin*", "destination": "https://<URL-DE-L-API>/uploads/:chemin*" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-```
-
-Côté API : `NODE_ENV=production`, variables `DB_*`, et `TRUST_PROXY` selon le nombre de proxys.
+Le site et l'API doivent être servis **sur le même domaine** pour que le cookie de session reste
+first-party (Safari bloque les cookies tiers) : `frontend/vercel.json` (déjà dans le dépôt) fait
+ce rewrite `/api/*` + `/uploads/*` vers l'API, avec un domaine placeholder à remplacer une fois
+l'API déployée. Marche à suivre complète (GitHub, Railway pour l'API + MySQL, Vercel pour le
+frontend, Resend pour l'email, achat de domaine) : voir **[DEPLOY.md](DEPLOY.md)** à la racine du
+dépôt — chaque étape qui reste demande un compte que je ne peux pas créer à ta place.
 
 ## Avancement (roadmap §9)
 
@@ -278,7 +279,7 @@ Côté API : `NODE_ENV=production`, variables `DB_*`, et `TRUST_PROXY` selon le 
 
 ### Checklist avant mise en ligne (audit du 14/09)
 
-Revue faite avant le lancement : tests (97 backend + 39 frontend, tous verts), code (auth,
+Revue faite avant le lancement : tests (100 backend + 39 frontend, tous verts), code (auth,
 sessions, requêtes SQL, CORS/cookies, gestion d'erreurs), et un passage en direct sur les 16 pages
 de l'app (connecté et non connecté) en écoutant la console et le réseau — **aucune erreur JS ni
 requête en échec trouvée**. Le détail :
@@ -291,37 +292,43 @@ SQL paramétrées (pas d'injection), pas de `dangerouslySetInnerHTML`/`eval`, au
 dans le code, IDOR testés (un utilisateur ne peut ni lire ni modifier les séances/aliments d'un
 autre).
 
-**Corrigé pendant cet audit** :
+**Corrigé pendant l'audit (14/09)** :
 - `.gitignore` excluait TOUT `backend/uploads/` (y compris `exercices/`, 56 images wger.de) —
   n'importe quel déploiement basé sur git aurait silencieusement perdu ces images. Corrigé pour
   n'exclure que `backend/uploads/avatars/` (contenu utilisateur, lui doit rester hors dépôt).
 - `frontend/public/robots.txt` ajouté (`Allow: /`) — absent jusqu'ici, gênant pour le référencement
   du calculateur (cahier §11, "meilleur outil SEO").
+- `.gitignore` excluait aussi `backend/.env.example` (le pattern `.env.*` matche aussi le modèle,
+  pas seulement les vrais `.env`) — ce fichier documente toutes les variables requises en
+  production (dont `DEPLOY.md` dépend) et ne contient aucun secret : `!.env.example` ajouté pour
+  qu'il reste suivi.
 
-**Bloquant, à traiter avant un vrai lancement public** :
-- **Aucun dépôt git** (`git init` jamais fait sur ce dossier) : pas d'historique, pas de retour en
-  arrière possible, et surtout **aucun déploiement Vercel/Railway/Render n'est possible sans ça**
-  (ces plateformes déploient depuis un dépôt). À faire avant toute mise en ligne.
-- **Aucune configuration de déploiement** (pas de `vercel.json`, pas de `Procfile`/équivalent) :
-  `app.js` suppose front et API sur le **même domaine** (cookie sans CORS) — cahier §6 recommandait
-  pourtant Vercel (front) + un hébergeur séparé (API), ce qui ne marche que si un rewrite
-  (`vercel.json`) fait apparaître l'API comme same-origin. À écrire une fois l'hébergeur de l'API
-  choisi (Railway/Render/VPS).
-- **Pas de réinitialisation de mot de passe** : un compte qui a oublié son mot de passe n'a aucun
-  moyen de le récupérer (pas de lib d'envoi d'email dans `package.json`). Nécessite de choisir un
-  fournisseur d'emails transactionnels (Resend, SendGrid, Postmark...) — décision externe, comme
-  `REACTBITS_LICENSE_KEY` ou le compte AdSense, à trancher avec toi avant de le coder.
-- **Aucune page légale** (mentions légales, politique de confidentialité) : l'app collecte des
-  données personnelles (email, date de naissance, poids/taille, photo) — obligatoire avant un
-  lancement public en France/UE. Nécessite tes informations (identité/société, hébergeur) pour être
-  rédigée correctement — pas quelque chose que je peux improviser à ta place.
-- **Le job de maintenance quotidien tourne en `setInterval` dans le process Node** (`server.js`,
-  recalcul des rangs + nettoyage des invités abandonnés) : marche seulement si l'API est déployée
-  en process long-vivant (Railway/Render/VPS). Sur une plateforme serverless (fonctions Vercel),
-  ce `setInterval` ne se déclencherait jamais de façon fiable — à garder en tête dans le choix
-  d'hébergeur de l'étape précédente.
-- Vérifier que la plateforme choisie pour l'API positionne bien `NODE_ENV=production` : sinon le
-  cookie de session repart en `secure: false` silencieusement (`backend/src/config.js`).
+**Fait dans la foulée (préparation au déploiement, 14/09)** :
+- **Dépôt git initialisé** (`git init` + premier commit sur `main`) — restait à faire depuis le
+  début du projet, bloquait tout déploiement.
+- **`frontend/vercel.json`** : rewrites `/api/*` et `/uploads/*` vers l'API (domaine à compléter
+  une fois l'hébergeur choisi), catch-all vers `index.html` pour le routage côté client.
+- **Réinitialisation de mot de passe** codée de bout en bout : `POST /api/auth/mot-de-passe-oublie`
+  + `POST /api/auth/reinitialiser-mot-de-passe` (jeton à usage unique, empreinte SHA-256 en base
+  comme les sessions, expire en 1h, invalide toutes les sessions ouvertes au moment du changement),
+  pages `/mot-de-passe-oublie` et `/reinitialiser-mot-de-passe`, lien depuis `/connexion`. Email
+  envoyé via l'API REST de Resend (`backend/src/email/envoyer.js`, pas de dépendance npm de plus) —
+  **nécessite `RESEND_API_KEY`** (voir DEPLOY.md) ; sans elle, le lien est juste affiché dans les
+  logs serveur, la fonctionnalité reste testable mais n'envoie rien de réel.
+- **Pages `/mentions-legales` et `/confidentialite`** créées et liées en pied de page — contenu
+  fidèle à ce que le code fait réellement, mais avec des **placeholders entre crochets** (ton
+  identité, ton adresse, tes hébergeurs) que je ne peux pas deviner à ta place.
+- **`DEPLOY.md`** (racine du dépôt) : marche à suivre complète et dans l'ordre pour les étapes qui
+  restent — GitHub, Railway (API + MySQL), Vercel (frontend), Resend (email), achat de domaine.
+  Toutes nécessitent un compte/paiement que je ne peux pas faire à ta place.
+
+**Toujours à faire par toi (voir DEPLOY.md pour le détail)** : pousser le dépôt sur GitHub, créer
+les comptes Railway/Vercel/Resend et suivre leurs étapes, acheter le domaine, compléter les
+placeholders des pages légales. Points à ne pas oublier une fois l'hébergeur de l'API choisi :
+positionner `NODE_ENV=production` (sinon le cookie de session repart en `secure: false`) et
+vérifier qu'il tourne en process long-vivant, pas en fonctions serverless (le job de maintenance
+quotidien de `server.js`, `setInterval`, a besoin d'un process qui ne s'éteint jamais entre deux
+requêtes).
 
 ### Restent à construire (notés dans le cahier des charges, non bloquants)
 

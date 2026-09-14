@@ -930,6 +930,13 @@ a.bouton-principal {
   color: var(--accent);
 }
 
+.lien-mot-de-passe-oublie {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+}
+
 /* --- Utilitaires --- */
 
 .visuellement-cache {
@@ -2219,6 +2226,40 @@ a.bouton-secondaire {
 
 .credits-nom {
   font-weight: 600;
+}
+
+/* --- Mentions légales / confidentialité (audit pré-lancement du 14/09) --- */
+
+.page-legale {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 640px;
+}
+
+.page-legale h1 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
+.page-legale h2 {
+  margin: 14px 0 0;
+  font-size: 1.05rem;
+}
+
+.page-legale p,
+.page-legale ul {
+  margin: 0;
+  color: var(--texte-doux);
+  line-height: 1.6;
+}
+
+.page-legale ul {
+  padding-left: 20px;
+}
+
+.page-legale a {
+  color: var(--accent-clair);
 }
 
 /* --- Rang --- */

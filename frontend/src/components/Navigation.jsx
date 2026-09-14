@@ -23,7 +23,7 @@ const ONGLETS_VISITEUR = [
 ];
 
 // Pages où la pilule n'a rien d'utile à montrer (onboarding et formulaires d'auth eux-mêmes).
-const PAGES_SANS_PILULE = ['/bienvenue', '/connexion', '/inscription'];
+const PAGES_SANS_PILULE = ['/bienvenue', '/connexion', '/inscription', '/mot-de-passe-oublie', '/reinitialiser-mot-de-passe'];
 
 // Navigation "PillNav" (React Bits, cahier §7) : logo dans un cercle à gauche, liens en pilules
 // avec animation de survol, menu burger sur mobile. Couleurs v4 (fond sombre) : baseColor sombre
