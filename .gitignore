@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.*
+# Contenu généré par les utilisateurs (photos de profil) : jamais commité. Les images
+# d'exercices (backend/uploads/exercices/, wger.de) sont au contraire un asset statique livré
+# avec l'app — elles doivent rester suivies par git, sinon elles manquent au déploiement.
+backend/uploads/avatars/

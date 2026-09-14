@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap à ajouter une fois le nom de domaine définitif acheté (repwise.fr ou getrepwise.app,
+# cahier §1) : Sitemap: https://<domaine>/sitemap.xml

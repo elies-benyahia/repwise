@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f1113" />
+    <title>Calculateur calories musculation : prise de masse, sèche, macros | Repwise</title>
+    <meta
+      name="description"
+      content="Calcule gratuitement tes calories et tes macros (protéines, glucides, lipides) pour la prise de masse, la perte de gras ou la recomposition. Formule Mifflin-St Jeor."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>" />
+    <script>
+      // Pose l'attribut avant le premier rendu React pour éviter un flash vert → couleur choisie
+      // (voir frontend/src/lib/theme.js et theme/ThemeCouleurContext.jsx).
+      try {
+        var t = localStorage.getItem('repwise-theme-couleur');
+        if (t) document.documentElement.setAttribute('data-theme-couleur', t);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

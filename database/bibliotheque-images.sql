@@ -1,0 +1,67 @@
+-- Images de démonstration pour la bibliothèque d'exercices (cahier §3/§4/§10), source
+-- wger.de (API publique, licence CC BY-SA/CC0/CC-BY par image — voir /credits dans l'app pour
+-- le détail par exercice, exigé par la licence). Rejouable (clé : nom). 56 des 68 exercices ont
+-- une correspondance suffisamment proche ; les 12 autres restent NULL (repli générique côté
+-- front) faute d'équivalent chez wger.de. Exécuté après bibliotheque-rang.sql par
+-- backend/scripts/init-db.js.
+
+UPDATE bibliotheque_exercices b
+JOIN (
+  SELECT 'Développé couché' AS nom, '/uploads/exercices/1.png' AS image
+  UNION ALL SELECT 'Développé incliné haltères', '/uploads/exercices/2.png'
+  UNION ALL SELECT 'Pompes', '/uploads/exercices/3.jpg'
+  UNION ALL SELECT 'Développé couché haltères', '/uploads/exercices/4.jpg'
+  UNION ALL SELECT 'Dips', '/uploads/exercices/5.png'
+  UNION ALL SELECT 'Écarté à la poulie vis-à-vis', '/uploads/exercices/6.jpg'
+  UNION ALL SELECT 'Tractions', '/uploads/exercices/7.jpg'
+  UNION ALL SELECT 'Rowing barre', '/uploads/exercices/8.jpg'
+  UNION ALL SELECT 'Tirage vertical', '/uploads/exercices/9.jpg'
+  UNION ALL SELECT 'Rowing haltère un bras', '/uploads/exercices/10.png'
+  UNION ALL SELECT 'Tirage horizontal à la poulie', '/uploads/exercices/11.jpg'
+  UNION ALL SELECT 'Pull-over à la poulie', '/uploads/exercices/12.jpg'
+  UNION ALL SELECT 'Shrugs à la barre', '/uploads/exercices/13.png'
+  UNION ALL SELECT 'Shrugs haltères', '/uploads/exercices/14.jpg'
+  UNION ALL SELECT 'Face pull', '/uploads/exercices/15.jpg'
+  UNION ALL SELECT 'Rowing menton', '/uploads/exercices/16.jpg'
+  UNION ALL SELECT 'Soulevé de terre', '/uploads/exercices/18.jpg'
+  UNION ALL SELECT 'Extensions lombaires au banc', '/uploads/exercices/19.png'
+  UNION ALL SELECT 'Good morning', '/uploads/exercices/20.png'
+  UNION ALL SELECT 'Développé militaire', '/uploads/exercices/22.png'
+  UNION ALL SELECT 'Élévations latérales', '/uploads/exercices/23.jpg'
+  UNION ALL SELECT 'Développé haltères assis', '/uploads/exercices/24.jpg'
+  UNION ALL SELECT 'Oiseau', '/uploads/exercices/25.jpg'
+  UNION ALL SELECT 'Curl barre', '/uploads/exercices/27.png'
+  UNION ALL SELECT 'Curl haltères alterné', '/uploads/exercices/28.jpg'
+  UNION ALL SELECT 'Curl marteau', '/uploads/exercices/29.png'
+  UNION ALL SELECT 'Curl incliné', '/uploads/exercices/30.png'
+  UNION ALL SELECT 'Curl pupitre', '/uploads/exercices/31.png'
+  UNION ALL SELECT 'Barre au front', '/uploads/exercices/32.png'
+  UNION ALL SELECT 'Extension à la poulie haute', '/uploads/exercices/33.jpg'
+  UNION ALL SELECT 'Dips buste droit', '/uploads/exercices/34.png'
+  UNION ALL SELECT 'Développé couché prise serrée', '/uploads/exercices/35.png'
+  UNION ALL SELECT 'Extension nuque haltère', '/uploads/exercices/36.png'
+  UNION ALL SELECT 'Curl inversé', '/uploads/exercices/37.jpg'
+  UNION ALL SELECT 'Curl poignets', '/uploads/exercices/38.png'
+  UNION ALL SELECT 'Gainage planche', '/uploads/exercices/41.png'
+  UNION ALL SELECT 'Relevé de jambes suspendu', '/uploads/exercices/42.png'
+  UNION ALL SELECT 'Crunch', '/uploads/exercices/43.png'
+  UNION ALL SELECT 'Roue abdominale', '/uploads/exercices/45.png'
+  UNION ALL SELECT 'Russian twist', '/uploads/exercices/48.png'
+  UNION ALL SELECT 'Flexion latérale haltère', '/uploads/exercices/49.jpg'
+  UNION ALL SELECT 'Hip thrust', '/uploads/exercices/51.jpg'
+  UNION ALL SELECT 'Squat bulgare', '/uploads/exercices/52.jpg'
+  UNION ALL SELECT 'Fentes marchées', '/uploads/exercices/53.jpg'
+  UNION ALL SELECT 'Pont fessier', '/uploads/exercices/54.png'
+  UNION ALL SELECT 'Kickback à la poulie', '/uploads/exercices/55.jpg'
+  UNION ALL SELECT 'Squat', '/uploads/exercices/56.jpg'
+  UNION ALL SELECT 'Presse à cuisses', '/uploads/exercices/57.png'
+  UNION ALL SELECT 'Leg extension', '/uploads/exercices/59.jpg'
+  UNION ALL SELECT 'Front squat', '/uploads/exercices/60.png'
+  UNION ALL SELECT 'Soulevé de terre roumain', '/uploads/exercices/61.png'
+  UNION ALL SELECT 'Leg curl allongé', '/uploads/exercices/62.jpg'
+  UNION ALL SELECT 'Leg curl assis', '/uploads/exercices/63.jpg'
+  UNION ALL SELECT 'Mollets debout', '/uploads/exercices/65.jpg'
+  UNION ALL SELECT 'Mollets assis', '/uploads/exercices/66.jpg'
+  UNION ALL SELECT 'Mollets à la presse', '/uploads/exercices/67.jpg'
+) v ON v.nom = b.nom
+SET b.image_ou_gif = v.image;
