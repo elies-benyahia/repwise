@@ -65,7 +65,10 @@ Le temps de repos est saisi par exercice et stocké sur chaque série (`series.t
 - Calculateur : un utilisateur connecté (ou invité) peut « Enregistrer comme mon objectif »
   (`objectifs_caloriques` + sexe / activité / objectif sur son profil, qui pré-remplissent ensuite
   le calculateur). Un visiteur voit à la place « Suivre mes repas gratuitement » → onboarding →
-  retour au calculateur.
+  **`/journal`** (bug corrigé le 15/09 : le lien renvoyait `depuis: '/'`, donc après les 4 étapes
+  d'onboarding + création de compte, l'utilisateur retombait sur le calculateur public qu'il
+  venait de quitter, sans aucune confirmation — repéré en rejouant tout le parcours au clavier via
+  CDP headless, pas juste en lisant le code).
 - `/journal?date=AAAA-MM-JJ` (aujourd'hui par défaut, pas de jour futur) : total du jour vs
   objectif (calories + barres de macros), aliments groupés par repas, ajout rapide.
 - Objectif affiché pour un jour donné : le dernier enregistré ce jour-là ou avant (le premier
@@ -77,6 +80,7 @@ Le temps de repos est saisi par exercice et stocké sur chaque série (`series.t
 | GET | `/api/journal/:date` | aliments du jour + objectif en vigueur |
 | GET | `/api/journal/aliments-recents` | 30 derniers aliments distincts, avec leurs valeurs |
 | POST | `/api/journal` | ajouter un aliment |
+| PATCH | `/api/journal/entrees/:id` | modifier la quantité (et le repas) d'un aliment déjà noté |
 | DELETE | `/api/journal/entrees/:id` | supprimer un aliment |
 | POST | `/api/objectif` | enregistrer l'objectif issu du calculateur |
 
@@ -119,6 +123,17 @@ valeurs déjà enregistrées) pour ajuster la quantité avant de rejouer l'ajout
 Pas de fallback de saisie manuelle : un plat maison absent d'Open Food Facts n'est, pour
 l'instant, pas ajoutable au journal — écart assumé, cohérent avec la demande explicite du cahier
 de « rechercher/sélectionner dans cette base plutôt que saisir manuellement ».
+
+**Bibliothèque locale, deuxième vague (retour du 15/09, « ajoute d'autres aliments... tout »)** :
+`database/aliments.sql` complète les 12 catégories existantes avec ~120 aliments de plus (181 →
+287 en base), même bloc upsert rejouable par nom, mêmes catégories (pas de 13e catégorie créée).
+
+**Modifier la quantité d'un aliment déjà noté (retour du 15/09, « on peut pas le changer »)** :
+avant, seuls l'ajout et la suppression existaient. Toucher une ligne du journal
+(`.ligne-aliment-bouton`) rouvre le même panneau `SelectionAliment` que l'ajout — pré-rempli à
+partir du pour-100g reconstruit (`versAlimentDepuisEntree`) — et « Enregistrer » appelle désormais
+`PATCH /journal/entrees/:id`, qui recalcule calories/macros à la nouvelle quantité et les remplace
+en base (toujours borné au propriétaire, mêmes bornes de validation que l'ajout : 1-5000 g).
 
 ## Carte du corps, bibliothèque et programmes
 
@@ -307,7 +322,10 @@ Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
   réglable (vert/bleu/rouge/violet) sur `/profil`, bibliothèque de ~150 aliments courants pour une
   vraie autocomplétion (Open Food Facts seul étant pauvre sur les aliments bruts), mot de passe
   oublié, pages légales, **mise en ligne** (Vercel + Render + Aiven, voir DEPLOY.md), menu mobile
-  allégé (page active seule en vert), et groupes d'entraînement (fil d'activité + encouragements)
+  allégé (page active seule en vert), groupes d'entraînement (fil d'activité + encouragements),
+  bug du bouton « Suivre mes repas » corrigé (redirigeait vers le calculateur au lieu du journal),
+  bibliothèque d'aliments étendue à ~287 (deuxième vague), édition de la quantité d'un aliment déjà
+  noté, et colonne des 8 rangs fixée à droite du classement en desktop
 - [x] 12. Monétisation (V3), phase 2 — Google AdSense sur le calculateur + bannière de consentement
   RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
@@ -610,6 +628,11 @@ possible, pas un vrai classement. Vient ensuite le podium (3 premiers, ordre vis
 liste, avec soit le score qu'il me manque pour entrer dans le rang GOAT, soit ma position (y
 compris au-delà du top 100, via `maPosition`) ; invité déjà GOAT invité à créer un compte pour
 apparaître.
+
+**Retour du 15/09 (« colonne à droite tout les rangs »)** : même JSX/liste des 8 rangs, mais
+`.classement-corps` passe en grid 2 colonnes à partir de 900px — `.classement-rangs` devient une
+colonne collante (`position: sticky`) à droite, le bouton est masqué et le panneau forcé ouvert en
+CSS (`grid-template-rows: 1fr` inconditionnel). En mobile, le bouton repliable reste inchangé.
 `/classement/:id` : profil public d'un joueur (clic sur une ligne ou une marche) — pseudo, bio,
 photo, rang, score, streak actuelle et record, séances des 30 derniers jours. Rien d'autre (pas
 l'email, pas le poids) : la route les vérifie côté serveur, elle ne fait pas que les cacher côté

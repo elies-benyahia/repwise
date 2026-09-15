@@ -161,6 +161,17 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   Toute route qui touche une séance d'un AUTRE utilisateur (encouragement) doit vérifier qu'il est
   membre du même groupe que soi (jamais juste "la séance existe") — même esprit que
   `rang/routes.js` pour le classement public.
+- Bug réel trouvé le 15/09 (pas juste une demande utilisateur) : le lien "Suivre mes repas
+  gratuitement" du Calculateur passait `state={{ depuis: '/' }}` à `/bienvenue` — après les 4
+  étapes d'onboarding + création de compte, l'utilisateur retombait sur le calculateur public
+  qu'il venait de quitter, sans confirmation. Repéré en rejouant tout le parcours via CDP headless
+  (form-fill + clics réels), pas en relisant le code — le bug n'était visible qu'à l'exécution.
+  Toujours vérifier un parcours multi-étapes de bout en bout, pas juste chaque écran isolément.
+- Édition d'une entrée du journal (`PATCH /journal/entrees/:id`) : réutilise le même composant
+  `SelectionAliment` que l'ajout, via `versAlimentDepuisEntree` pour reconstruire le pour100g. Le
+  corps envoyé doit inclure `quantite` explicitement — `alimentEchelle()` ne renvoie que
+  calories/macros, pas la quantité (bug commis puis corrigé dans la même session, à ne pas
+  reproduire si ce flux est retouché).
 - Unités stockées : kg, cm, secondes, kcal, grammes.
 - Mobile-first : vérifier chaque écran à ~390px de large.
 - Logique métier dans des modules purs sous frontend/src/lib, testée avec `npm test` (node:test).

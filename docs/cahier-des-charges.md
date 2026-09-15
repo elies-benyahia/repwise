@@ -82,6 +82,12 @@ Ce profil sert ensuite à personnaliser le calculateur de calories, les recomman
   - Encouragement (👏) : équivalent d'un kudos, un par personne par séance.
   - Rejoindre un groupe vaut consentement à partager ses séances avec CE groupe précis (visibilité plus étroite que le classement, qui exige en plus le rang GOAT).
   - Un vrai chat de groupe (texte libre) reste une évolution possible si le besoin se confirme à l'usage, pas construit pour l'instant.
+- **Retours du 15/09 (suite)** :
+  - Bouton "Commencer" du hero retiré (menait à l'onboarding, redondant avec les CTA plus bas).
+  - **Bug corrigé** : "Suivre mes repas gratuitement" renvoyait l'utilisateur sur le calculateur public après tout l'onboarding, au lieu du journal — trouvé en rejouant le parcours complet, pas signalé explicitement par l'utilisateur au départ.
+  - Bibliothèque d'aliments étendue (~181 → 287) sur les mêmes 12 catégories.
+  - **Modifier la quantité d'un aliment déjà noté au journal** (jusqu'ici : ajout/suppression seulement) — réouvre le même panneau que l'ajout, pré-rempli, `PATCH /journal/entrees/:id`.
+  - **Classement** : les 8 rangs, jusqu'ici dans un panneau repliable, deviennent une colonne fixe à droite à partir de 900px (desktop) ; le panneau repliable reste tel quel en mobile.
 
 ### V3 (monétisation avancée, une fois l'audience là)
 - Version premium sans publicité + fonctions avancées (export PDF, programmes tout faits).
