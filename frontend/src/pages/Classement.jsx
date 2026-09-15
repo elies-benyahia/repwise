@@ -42,71 +42,78 @@ export default function Classement() {
       {!donnees && !erreur && <p className="aide">Chargement…</p>}
 
       {donnees && (
-        <>
-          <MonRang moi={donnees.moi} maPosition={donnees.maPosition} scoreGoat={donnees.scoreGoat} total={donnees.classement.length} />
+        <div className="classement-corps">
+          <div className="classement-principal">
+            <MonRang moi={donnees.moi} maPosition={donnees.maPosition} scoreGoat={donnees.scoreGoat} total={donnees.classement.length} />
 
-          <button
-            type="button"
-            className="bouton-discret bouton-tous-rangs"
-            onClick={() => setTousOuverts((v) => !v)}
-            aria-expanded={tousOuverts}
-            aria-controls="tous-les-rangs"
-          >
-            Tous les classements
-            <span aria-hidden="true" className={`chevron${tousOuverts ? ' ouvert' : ''}`}>⌄</span>
-          </button>
-          <div id="tous-les-rangs" className="tous-rangs-enveloppe" data-ouvert={tousOuverts}>
-            <ol className="tous-rangs-liste">
-              {TOUS_LES_RANGS.map((rang) => (
-                <li key={rang.rang}>
-                  <BadgeRang rang={rang} taille={40} />
-                  <span>{rang.nom}</span>
-                </li>
-              ))}
-            </ol>
+            {donnees.classement.length === 0 && (
+              <p className="aide classement-vide">Personne n'a encore atteint le rang GOAT. La place est libre.</p>
+            )}
+
+            {podium.length > 0 && (
+              <ol className="podium" aria-label="Podium">
+                {/* Ordre visuel 2e, 1er, 3e ; l'ordre de lecture reste 1er, 2e, 3e grâce à CSS order. */}
+                {podium.map((joueur) => (
+                  <li key={joueur.id} className={`marche marche-${joueur.position}`}>
+                    <Link to={`/classement/${joueur.id}`} className="marche-lien">
+                      <BadgeRang rang={rangGoat(joueur.palier)} taille={joueur.position === 1 ? 64 : 48} />
+                      <span className="marche-position">{joueur.position}</span>
+                      <span className="marche-nom">{joueur.pseudo}{joueur.estMoi && ' (toi)'}</span>
+                      <span className="marche-score">{formaterNombre(joueur.score)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {suite.length > 0 && (
+              <ol className="liste-classement" start={podium.length + 1}>
+                {suite.map((joueur) => (
+                  <li key={joueur.id} className={joueur.estMoi ? 'moi' : undefined}>
+                    <Link to={`/classement/${joueur.id}`} className="ligne-classement">
+                      <span className="classement-position">{joueur.position}</span>
+                      <span className="classement-nom">
+                        {joueur.pseudo}{joueur.estMoi && ' (toi)'}
+                        <small>GOAT {joueur.palier} · score {formaterNombre(joueur.score)}</small>
+                      </span>
+                      <span className="classement-streak">
+                        <Flamme allumee={joueur.streak > 0} taille={18} />
+                        <span>{joueur.streak}</span>
+                        <span className="visuellement-cache"> jours d'entraînement d'affilée</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
 
-          {donnees.classement.length === 0 && (
-            <p className="aide classement-vide">Personne n'a encore atteint le rang GOAT. La place est libre.</p>
-          )}
-
-          {podium.length > 0 && (
-            <ol className="podium" aria-label="Podium">
-              {/* Ordre visuel 2e, 1er, 3e ; l'ordre de lecture reste 1er, 2e, 3e grâce à CSS order. */}
-              {podium.map((joueur) => (
-                <li key={joueur.id} className={`marche marche-${joueur.position}`}>
-                  <Link to={`/classement/${joueur.id}`} className="marche-lien">
-                    <BadgeRang rang={rangGoat(joueur.palier)} taille={joueur.position === 1 ? 64 : 48} />
-                    <span className="marche-position">{joueur.position}</span>
-                    <span className="marche-nom">{joueur.pseudo}{joueur.estMoi && ' (toi)'}</span>
-                    <span className="marche-score">{formaterNombre(joueur.score)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          )}
-
-          {suite.length > 0 && (
-            <ol className="liste-classement" start={podium.length + 1}>
-              {suite.map((joueur) => (
-                <li key={joueur.id} className={joueur.estMoi ? 'moi' : undefined}>
-                  <Link to={`/classement/${joueur.id}`} className="ligne-classement">
-                    <span className="classement-position">{joueur.position}</span>
-                    <span className="classement-nom">
-                      {joueur.pseudo}{joueur.estMoi && ' (toi)'}
-                      <small>GOAT {joueur.palier} · score {formaterNombre(joueur.score)}</small>
-                    </span>
-                    <span className="classement-streak">
-                      <Flamme allumee={joueur.streak > 0} taille={18} />
-                      <span>{joueur.streak}</span>
-                      <span className="visuellement-cache"> jours d'entraînement d'affilée</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          )}
-        </>
+          {/* Retour du 15/09 ("colonne à droite tout les rangs disponibles") : même liste des 8
+              rangs, repliable en mobile (bouton), colonne fixe toujours ouverte en desktop — voir
+              .classement-rangs dans styles.css. */}
+          <div className="classement-rangs">
+            <button
+              type="button"
+              className="bouton-discret bouton-tous-rangs"
+              onClick={() => setTousOuverts((v) => !v)}
+              aria-expanded={tousOuverts}
+              aria-controls="tous-les-rangs"
+            >
+              Tous les classements
+              <span aria-hidden="true" className={`chevron${tousOuverts ? ' ouvert' : ''}`}>⌄</span>
+            </button>
+            <div id="tous-les-rangs" className="tous-rangs-enveloppe" data-ouvert={tousOuverts}>
+              <ol className="tous-rangs-liste">
+                {TOUS_LES_RANGS.map((rang) => (
+                  <li key={rang.rang}>
+                    <BadgeRang rang={rang} taille={40} />
+                    <span>{rang.nom}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
