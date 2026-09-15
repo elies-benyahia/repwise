@@ -277,7 +277,7 @@ function EnregistrerObjectif({ resultat, profil }) {
     return (
       <div className="carte appel-compte">
         <p>Enregistre cet objectif et compare-le chaque jour à ce que tu manges.</p>
-        <Link to="/bienvenue" state={{ depuis: '/' }} className="bouton-principal">Suivre mes repas gratuitement</Link>
+        <Link to="/bienvenue" state={{ depuis: '/journal' }} className="bouton-principal">Suivre mes repas gratuitement</Link>
       </div>
     );
   }
