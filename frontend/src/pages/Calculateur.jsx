@@ -227,7 +227,6 @@ function HeroPublic() {
           </span>
           <h1>Calculateur de calories et macros pour la musculation</h1>
           <p>Tes calories et tes macros du jour en 30 secondes, selon ton objectif : prise de masse, sèche ou recomposition.</p>
-          <Link to="/bienvenue" className="bouton-principal hero-cta">Commencer</Link>
 
           <div className="hero-social">
             <div className="hero-avatars" aria-hidden="true">

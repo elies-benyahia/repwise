@@ -341,12 +341,6 @@ h2 {
   color: var(--texte-doux);
 }
 
-.hero-cta {
-  display: inline-flex;
-  width: auto;
-  padding: 12px 28px;
-}
-
 .hero-social {
   display: flex;
   align-items: center;
