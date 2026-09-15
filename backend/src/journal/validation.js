@@ -55,6 +55,32 @@ export function lireEntree(corps) {
   };
 }
 
+// Modification d'une entrée déjà enregistrée (retour du 15/09, "on peut pas changer le nombre
+// de grammes") : mêmes bornes que lireEntree, mais sans date/nomAliment/codeBarres/imageUrl —
+// ces champs identifient l'aliment choisi et ne changent pas, seuls repas/quantité/macros bougent.
+export function lireModificationEntree(corps) {
+  const c = corps ?? {};
+  const champs = {};
+
+  if (!REPAS.includes(c.repas)) champs.repas = 'Repas inconnu';
+  if (!entierEntre(c.calories, 0, 5000)) champs.calories = 'Entre 0 et 5000 kcal';
+  for (const macro of ['proteines', 'glucides', 'lipides', 'sucre']) {
+    if (!nombreEntre(c[macro] ?? 0, 0, 500)) champs[macro] = 'Entre 0 et 500 g';
+  }
+  if (!nombreEntre(c.quantite, 1, 5000)) champs.quantite = 'Entre 1 et 5000 g';
+
+  if (Object.keys(champs).length > 0) throw new ErreurHttp(400, "Vérifie les champs de l'aliment", champs);
+  return {
+    repas: c.repas,
+    quantite: unDecimal(c.quantite),
+    calories: c.calories,
+    proteines: unDecimal(c.proteines ?? 0),
+    glucides: unDecimal(c.glucides ?? 0),
+    lipides: unDecimal(c.lipides ?? 0),
+    sucre: unDecimal(c.sucre ?? 0),
+  };
+}
+
 // Objectif issu du calculateur. Les paramètres du calcul (sexe, activité, objectif) sont
 // optionnels ; s'ils sont fournis, ils sont aussi enregistrés sur le profil.
 export function lireObjectif(corps) {

@@ -103,6 +103,49 @@ test('supprimer un aliment, seulement le sien', async () => {
   assert.deepEqual((await appeler('/journal/2026-09-10', { cookie: proprietaire.cookie })).corps.entrees, []);
 });
 
+test('modifier la quantité (et le repas) recalcule les macros', async () => {
+  const { cookie } = await nouvelInvite();
+  const { id } = await ajouter(cookie); // 650 kcal / 45 p / 80.3 g / 12 l pour 100 g (par défaut)
+
+  const r = await appeler(`/journal/entrees/${id}`, {
+    methode: 'PATCH',
+    cookie,
+    corps: { repas: 'collation', quantite: 200, calories: 1300, proteines: 90, glucides: 160.6, lipides: 24, sucre: 0 },
+  });
+  assert.equal(r.statut, 200);
+  assert.equal(r.corps.entree.repas, 'collation');
+  assert.equal(r.corps.entree.quantite, 200);
+  assert.equal(r.corps.entree.calories, 1300);
+  assert.equal(r.corps.entree.proteines, 90);
+
+  const journal = await appeler('/journal/2026-09-10', { cookie });
+  assert.deepEqual(journal.corps.entrees.map((e) => [e.repas, e.calories]), [['collation', 1300]]);
+});
+
+test('modifier un aliment, seulement le sien, et seulement s\'il existe', async () => {
+  const proprietaire = await nouvelInvite();
+  const intrus = await nouvelInvite();
+  const { id } = await ajouter(proprietaire.cookie);
+  const corps = { repas: 'diner', quantite: 150, calories: 500, proteines: 30, glucides: 50, lipides: 10, sucre: 0 };
+
+  assert.equal((await appeler(`/journal/entrees/${id}`, { methode: 'PATCH', cookie: intrus.cookie, corps })).statut, 404);
+  assert.equal((await appeler('/journal/entrees/999999', { methode: 'PATCH', cookie: proprietaire.cookie, corps })).statut, 404);
+  assert.equal((await appeler(`/journal/entrees/${id}`, { methode: 'PATCH', cookie: proprietaire.cookie, corps })).statut, 200);
+});
+
+test('validation de la modification (quantité et repas notamment)', async () => {
+  const { cookie } = await nouvelInvite();
+  const { id } = await ajouter(cookie);
+
+  const r = await appeler(`/journal/entrees/${id}`, {
+    methode: 'PATCH',
+    cookie,
+    corps: { repas: 'brunch', quantite: 0, calories: 650, proteines: 45, glucides: 80, lipides: 12 },
+  });
+  assert.equal(r.statut, 400);
+  assert.deepEqual(Object.keys(r.corps.champs).sort(), ['quantite', 'repas']);
+});
+
 test("les aliments d'un autre utilisateur n'apparaissent pas", async () => {
   const a = await nouvelInvite();
   const b = await nouvelInvite();
@@ -143,4 +186,5 @@ test('validation des aliments et des objectifs', async () => {
 test('le journal exige une session', async () => {
   assert.equal((await appeler('/journal/2026-09-10')).statut, 401);
   assert.equal((await appeler('/objectif', { methode: 'POST', corps: {} })).statut, 401);
+  assert.equal((await appeler('/journal/entrees/1', { methode: 'PATCH', corps: {} })).statut, 401);
 });

@@ -28,6 +28,11 @@ export default function Journal() {
   const [erreur, setErreur] = useState(null);
   const [tentative, setTentative] = useState(0);
   const [recents, setRecents] = useState([]);
+  // Retour du 15/09 ("on peut pas changer le nombre de grammes") : édition d'une entrée déjà
+  // enregistrée, via le même formulaire que l'ajout (reconstruit son pour100g d'origine).
+  const [edition, setEdition] = useState(null); // { id, aliment, quantite, repas } | null
+  const [erreurEdition, setErreurEdition] = useState(null);
+  const [envoiEditionEnCours, setEnvoiEditionEnCours] = useState(false);
 
   useEffect(() => {
     let abandonne = false;
@@ -59,6 +64,26 @@ export default function Journal() {
     setJournee((j) => ({ ...j, entrees: j.entrees.filter((e) => e.id !== id) }));
   }
 
+  function ouvrirEdition(entree) {
+    setErreurEdition(null);
+    setEdition({ id: entree.id, aliment: versAlimentDepuisEntree(entree), quantite: entree.quantite, repas: entree.repas });
+  }
+
+  async function confirmerEdition() {
+    setErreurEdition(null);
+    setEnvoiEditionEnCours(true);
+    try {
+      const corps = { repas: edition.repas, ...alimentEchelle(edition.aliment, edition.quantite) };
+      const { entree } = await appelerApi(`/journal/entrees/${edition.id}`, { methode: 'PATCH', corps });
+      setJournee((j) => ({ ...j, entrees: j.entrees.map((e) => (e.id === entree.id ? entree : e)) }));
+      setEdition(null);
+    } catch (err) {
+      setErreurEdition(err.message);
+    } finally {
+      setEnvoiEditionEnCours(false);
+    }
+  }
+
   const allerAuJour = (jour) => setParametres(jour === jourCourant ? {} : { date: jour });
 
   return (
@@ -88,16 +113,28 @@ export default function Journal() {
       {journee && (
         <>
           <ResumeNutrition total={totaux(journee.entrees)} objectif={journee.objectif} />
-          <ListeRepas entrees={journee.entrees} onSupprimer={supprimer} />
-          {/* key : recherche neuve à chaque changement de jour. */}
-          <RechercheAliment key={date} date={date} recents={recents} onAjouter={ajouter} />
+          <ListeRepas entrees={journee.entrees} onSupprimer={supprimer} onModifier={ouvrirEdition} />
+          {edition ? (
+            <SelectionAliment
+              selection={edition}
+              onChange={setEdition}
+              onConfirmer={confirmerEdition}
+              onAnnuler={() => setEdition(null)}
+              erreur={erreurEdition}
+              envoiEnCours={envoiEditionEnCours}
+              edition
+            />
+          ) : (
+            // key : recherche neuve à chaque changement de jour.
+            <RechercheAliment key={date} date={date} recents={recents} onAjouter={ajouter} />
+          )}
         </>
       )}
     </section>
   );
 }
 
-function ListeRepas({ entrees, onSupprimer }) {
+function ListeRepas({ entrees, onSupprimer, onModifier }) {
   const [erreur, setErreur] = useState(null);
 
   if (entrees.length === 0) return <p className="aide journal-vide">Rien de noté pour ce jour.</p>;
@@ -126,15 +163,22 @@ function ListeRepas({ entrees, onSupprimer }) {
             <ul>
               {duRepas.map((entree) => (
                 <li key={entree.id} className="ligne-aliment">
-                  {entree.imageUrl && <img src={entree.imageUrl} alt="" className="aliment-image" />}
-                  <div>
-                    <span className="aliment-nom">{entree.nomAliment} <span className="texte-doux">· {formaterNombre(entree.quantite)} g</span></span>
-                    <span className="aliment-detail">
-                      {formaterNombre(entree.calories)} kcal
-                      {Object.entries(MACROS).map(([m, { court }]) => ` · ${court} ${formaterNombre(entree[m])}`)}
-                      {entree.sucre > 0 && ` · sucre ${formaterNombre(entree.sucre)}`}
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    className="ligne-aliment-bouton"
+                    onClick={() => onModifier(entree)}
+                    aria-label={`Modifier la quantité de ${entree.nomAliment}`}
+                  >
+                    {entree.imageUrl && <img src={entree.imageUrl} alt="" className="aliment-image" />}
+                    <div>
+                      <span className="aliment-nom">{entree.nomAliment} <span className="texte-doux">· {formaterNombre(entree.quantite)} g</span></span>
+                      <span className="aliment-detail">
+                        {formaterNombre(entree.calories)} kcal
+                        {Object.entries(MACROS).map(([m, { court }]) => ` · ${court} ${formaterNombre(entree[m])}`)}
+                        {entree.sucre > 0 && ` · sucre ${formaterNombre(entree.sucre)}`}
+                      </span>
+                    </div>
+                  </button>
                   <button
                     type="button"
                     className="bouton-icone bouton-icone-petit"
@@ -300,7 +344,7 @@ function RechercheAliment({ date, recents, onAjouter }) {
   );
 }
 
-function SelectionAliment({ selection, onChange, onConfirmer, onAnnuler, erreur, envoiEnCours }) {
+function SelectionAliment({ selection, onChange, onConfirmer, onAnnuler, erreur, envoiEnCours, edition = false }) {
   const { aliment, quantite, repas } = selection;
   const quantiteValide = Number.isFinite(quantite) && quantite > 0 && quantite <= 5000;
   const apercu = quantiteValide ? alimentEchelle(aliment, quantite) : null;
@@ -352,7 +396,9 @@ function SelectionAliment({ selection, onChange, onConfirmer, onAnnuler, erreur,
       <div className="selection-aliment-actions">
         <button type="button" className="bouton-secondaire" onClick={onAnnuler}>Annuler</button>
         <button type="button" className="bouton-principal" onClick={onConfirmer} disabled={!quantiteValide || envoiEnCours}>
-          {envoiEnCours ? 'Ajout…' : 'Ajouter'}
+          {edition
+            ? (envoiEnCours ? 'Enregistrement…' : 'Enregistrer')
+            : (envoiEnCours ? 'Ajout…' : 'Ajouter')}
         </button>
       </div>
     </div>

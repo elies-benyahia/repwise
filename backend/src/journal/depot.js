@@ -53,6 +53,22 @@ export async function ajouterEntree(utilisateurId, entree) {
   return versEntree(ligne);
 }
 
+export async function modifierEntree(utilisateurId, id, champs) {
+  const [resultat] = await pool.execute(
+    `UPDATE entrees_alimentaires
+     SET repas = ?, quantite = ?, calories = ?, proteines = ?, glucides = ?, lipides = ?, sucre = ?
+     WHERE id = ? AND utilisateur_id = ?`,
+    [champs.repas, champs.quantite, champs.calories, champs.proteines, champs.glucides, champs.lipides,
+      champs.sucre, id, utilisateurId],
+  );
+  if (resultat.affectedRows === 0) return null;
+  const [[ligne]] = await pool.execute(
+    `SELECT ${COLONNES_ENTREE} FROM entrees_alimentaires WHERE id = ?`,
+    [id],
+  );
+  return versEntree(ligne);
+}
+
 export async function supprimerEntree(utilisateurId, id) {
   const [resultat] = await pool.execute(
     'DELETE FROM entrees_alimentaires WHERE id = ? AND utilisateur_id = ?',

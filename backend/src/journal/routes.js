@@ -4,9 +4,12 @@ import { ErreurHttp } from '../erreurs.js';
 import { recalculerRang } from '../rang/depot.js';
 import { trouverUtilisateur } from '../utilisateurs/modele.js';
 import {
-  ajouterEntree, enregistrerObjectif, listerAlimentsRecents, listerEntrees, supprimerEntree, trouverObjectif,
+  ajouterEntree, enregistrerObjectif, listerAlimentsRecents, listerEntrees, modifierEntree, supprimerEntree,
+  trouverObjectif,
 } from './depot.js';
-import { lireDate, lireEntree, lireObjectif } from './validation.js';
+import {
+  lireDate, lireEntree, lireModificationEntree, lireObjectif,
+} from './validation.js';
 
 export const routesJournal = Router();
 routesJournal.use(exigerConnexion);
@@ -28,6 +31,14 @@ routesJournal.get('/:date', async (req, res) => {
 
 routesJournal.post('/', async (req, res) => {
   res.status(201).json({ entree: await ajouterEntree(req.utilisateur.id, lireEntree(req.body)) });
+});
+
+routesJournal.patch('/entrees/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) throw new ErreurHttp(404, 'Aliment introuvable');
+  const entree = await modifierEntree(req.utilisateur.id, id, lireModificationEntree(req.body));
+  if (!entree) throw new ErreurHttp(404, 'Aliment introuvable');
+  res.json({ entree });
 });
 
 routesJournal.delete('/entrees/:id', async (req, res) => {

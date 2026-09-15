@@ -267,8 +267,16 @@ h2 {
 
   .formulaire,
   .onboarding,
-  .classement,
   .page-seance {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* .classement garde sa largeur de formulaire tant qu'il n'a que la colonne principale
+     (pas encore de données) ; une fois la grille à deux colonnes en place (.classement-corps,
+     plus bas), elle prend le relais et .classement peut s'étirer. */
+  .classement {
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
@@ -1616,14 +1624,35 @@ a.bouton-principal {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 6px 10px 14px;
+  padding: 6px 6px 6px 8px;
 }
 
 .ligne-aliment + .ligne-aliment {
   border-top: 1px solid var(--bordure);
 }
 
-.ligne-aliment > div {
+/* Retour du 15/09 : toute la ligne (hors suppression) ouvre l'édition de la quantité. */
+.ligne-aliment-bouton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: none;
+  border-radius: var(--rayon-petit);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ligne-aliment-bouton:hover {
+  background: color-mix(in srgb, var(--surface) 60%, var(--texte) 6%);
+}
+
+.ligne-aliment-bouton > div {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -2455,6 +2484,59 @@ a.bouton-secondaire {
 .classement-vide {
   margin: 12px 0;
   text-align: center;
+}
+
+/* Retour du 15/09 ("colonne à droite tout les rangs") : empilé en mobile (panneau repliable,
+   inchangé) ; en desktop, .classement-rangs devient une colonne fixe à droite du classement,
+   toujours ouverte (voir la surcharge de .tous-rangs-enveloppe plus bas). */
+.classement-corps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.classement-principal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .classement {
+    max-width: none;
+  }
+
+  .classement-corps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    align-items: start;
+    gap: 20px;
+  }
+
+  .classement-rangs {
+    position: sticky;
+    top: 90px;
+  }
+
+  .classement-rangs .bouton-tous-rangs {
+    display: none;
+  }
+
+  .classement-rangs .tous-rangs-enveloppe {
+    grid-template-rows: 1fr;
+  }
+
+  .classement-rangs .tous-rangs-liste {
+    grid-template-columns: 1fr;
+  }
+
+  .classement-rangs .tous-rangs-liste li {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 0.85rem;
+  }
 }
 
 /* Bouton "Tous les classements" + panneau des 8 rangs (cahier §5) : animation d'ouverture via
