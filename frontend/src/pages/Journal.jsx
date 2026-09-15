@@ -73,7 +73,7 @@ export default function Journal() {
     setErreurEdition(null);
     setEnvoiEditionEnCours(true);
     try {
-      const corps = { repas: edition.repas, ...alimentEchelle(edition.aliment, edition.quantite) };
+      const corps = { repas: edition.repas, quantite: edition.quantite, ...alimentEchelle(edition.aliment, edition.quantite) };
       const { entree } = await appelerApi(`/journal/entrees/${edition.id}`, { methode: 'PATCH', corps });
       setJournee((j) => ({ ...j, entrees: j.entrees.map((e) => (e.id === entree.id ? entree : e)) }));
       setEdition(null);
