@@ -152,6 +152,15 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
 - Réinitialisation de mot de passe : même patron que les sessions (jeton aléatoire, seule son
   empreinte SHA-256 va en base, `sessions.js#empreinte` exportée et réutilisée). Un mot de passe
   changé doit toujours révoquer les sessions existantes de ce compte (vol de session).
+- Groupes d'entraînement (`backend/src/groupes/`, demande du 15/09) : décision volontaire de ne
+  **pas** faire de messagerie libre (chat/DM) — fil d'activité + encouragements à la place, voir
+  README « Groupes d'entraînement ». Le fil d'activité n'a pas de table dédiée : il se lit depuis
+  `seances` (comme la streak, jamais stocké à part). `streakDe` est exportée de `rang/routes.js`
+  pour que le mini-classement de groupe réutilise le même calcul que `/rang`/`/classement` plutôt
+  que de le dupliquer — si tu modifies le calcul de streak, il n'y a qu'un seul endroit à changer.
+  Toute route qui touche une séance d'un AUTRE utilisateur (encouragement) doit vérifier qu'il est
+  membre du même groupe que soi (jamais juste "la séance existe") — même esprit que
+  `rang/routes.js` pour le classement public.
 - Unités stockées : kg, cm, secondes, kcal, grammes.
 - Mobile-first : vérifier chaque écran à ~390px de large.
 - Logique métier dans des modules purs sous frontend/src/lib, testée avec `npm test` (node:test).

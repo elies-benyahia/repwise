@@ -321,3 +321,54 @@ CREATE TABLE IF NOT EXISTS feedback (
     REFERENCES utilisateurs(id) ON DELETE SET NULL,
   KEY idx_feedback_statut (statut, date_envoi)
 ) ENGINE=InnoDB;
+
+-- Groupes d'entraînement (demande du 15/09 : "système de groupe... suivre leur progression...
+-- s'envoyer des messages"). Décision (voir docs/cahier-des-charges.md) : pas de messagerie libre
+-- pour l'instant (risques de modération/abus disproportionnés pour un site qui vient de lancer) —
+-- un fil d'activité + des encouragements rapides à la place, façon Strava. Privé par lien
+-- d'invitation, pas de groupes publics/découvrables.
+CREATE TABLE IF NOT EXISTS groupes (
+  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nom             VARCHAR(60) NOT NULL,
+  -- Code court partagé pour rejoindre (pas une URL complète : plus simple à dicter/coller).
+  -- Espace de recherche large (36^8) : pas besoin de expiration, un simple rate-limit sur
+  -- POST /groupes/rejoindre suffit contre le brute-force.
+  code_invitation CHAR(8) NOT NULL,
+  createur_id     INT UNSIGNED NOT NULL,
+  date_creation   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_groupes_createur FOREIGN KEY (createur_id)
+    REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_groupes_code (code_invitation)
+) ENGINE=InnoDB;
+
+-- Rejoindre un groupe vaut consentement à partager ses séances (type + date, jamais les charges/
+-- répétitions) avec CE groupe précis — plus étroit que le classement public (qui exige le rang
+-- GOAT + profil_public). Quitter un groupe (DELETE sa ligne) arrête immédiatement ce partage.
+CREATE TABLE IF NOT EXISTS groupes_membres (
+  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  groupe_id       INT UNSIGNED NOT NULL,
+  utilisateur_id  INT UNSIGNED NOT NULL,
+  date_adhesion   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_groupes_membres_groupe FOREIGN KEY (groupe_id)
+    REFERENCES groupes(id) ON DELETE CASCADE,
+  CONSTRAINT fk_groupes_membres_utilisateur FOREIGN KEY (utilisateur_id)
+    REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_groupes_membres (groupe_id, utilisateur_id),
+  KEY idx_groupes_membres_utilisateur (utilisateur_id)
+) ENGINE=InnoDB;
+
+-- Pas de table "activités" séparée : le fil d'activité d'un groupe se lit directement depuis
+-- `seances` (JOIN sur groupes_membres), comme la streak est recalculée depuis `seances` plutôt que
+-- stockée — une séance modifiée/supprimée après coup resterait sinon fausse dans le fil.
+-- Encouragement = équivalent d'un "kudos" Strava, un par personne par séance.
+CREATE TABLE IF NOT EXISTS encouragements (
+  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  seance_id       INT UNSIGNED NOT NULL,
+  utilisateur_id  INT UNSIGNED NOT NULL,
+  date_creation   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_encouragements_seance FOREIGN KEY (seance_id)
+    REFERENCES seances(id) ON DELETE CASCADE,
+  CONSTRAINT fk_encouragements_utilisateur FOREIGN KEY (utilisateur_id)
+    REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_encouragements (seance_id, utilisateur_id)
+) ENGINE=InnoDB;

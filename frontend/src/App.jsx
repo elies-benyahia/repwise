@@ -20,6 +20,8 @@ import Confidentialite from './pages/Confidentialite.jsx';
 import Credits from './pages/Credits.jsx';
 import Exercices from './pages/Exercices.jsx';
 import Feedback from './pages/Feedback.jsx';
+import Groupe from './pages/Groupe.jsx';
+import Groupes from './pages/Groupes.jsx';
 import JoueurClassement from './pages/JoueurClassement.jsx';
 import Journal from './pages/Journal.jsx';
 import MentionsLegales from './pages/MentionsLegales.jsx';
@@ -82,6 +84,8 @@ export default function App() {
                   <Route path="/classement" element={protegee(<Classement />)} />
                   <Route path="/classement/:id" element={protegee(<JoueurClassement />)} />
                   <Route path="/rang" element={protegee(<Rang />)} />
+                  <Route path="/groupes" element={protegee(<Groupes />)} />
+                  <Route path="/groupes/:id" element={protegee(<Groupe />)} />
                   <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
                 </Routes>
                 <PiedDePage />

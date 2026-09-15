@@ -75,6 +75,13 @@ Ce profil sert ensuite à personnaliser le calculateur de calories, les recomman
 - **Rappel dans le formulaire de séance** : sous chaque exercice, affichage de la dernière performance ("Dernière fois (9 sept.) : 8·8·8 × 80 kg") avec suggestion (augmenter la charge si toutes les séries sont passées, sinon rester à la même charge) et bouton pour pré-remplir.
 - **Partage de séance** : bouton qui envoie un résumé via le partage natif du téléphone (ou copie), sans les notes privées.
 - **Widget "À travailler"** sur le dashboard : grands groupes musculaires non travaillés depuis une semaine.
+- **Groupes d'entraînement** (`/groupes`, demandé le 15/09 : "système de groupe... suivre leur progression... s'envoyer des messages"). Décision : pas de messagerie libre pour l'instant (temps réel/historique/modération de contenu = beaucoup de travail et de risques d'abus pour un site qui vient de lancer, sans bénéfice évident face à l'alternative) — **fil d'activité + encouragements rapides façon Strava** à la place, qui réutilise directement le rang/la streak déjà calculés :
+  - Groupe privé créé par un utilisateur, rejoint par un code à 8 caractères (pas de découverte publique).
+  - Mini-classement du groupe : chaque membre avec son rang, son score et sa streak.
+  - Fil d'activité : les séances loggées par les membres (type + date **seulement**, jamais les charges/répétitions — mêmes règles de confidentialité que le classement public), lu directement depuis `seances` plutôt que stocké à part (pas de compteur qui pourrait devenir faux si une séance est modifiée/supprimée après coup).
+  - Encouragement (👏) : équivalent d'un kudos, un par personne par séance.
+  - Rejoindre un groupe vaut consentement à partager ses séances avec CE groupe précis (visibilité plus étroite que le classement, qui exige en plus le rang GOAT).
+  - Un vrai chat de groupe (texte libre) reste une évolution possible si le besoin se confirme à l'usage, pas construit pour l'instant.
 
 ### V3 (monétisation avancée, une fois l'audience là)
 - Version premium sans publicité + fonctions avancées (export PDF, programmes tout faits).
@@ -148,6 +155,8 @@ rangs_utilisateur
 ```
 
 Écarts implémentés par rapport à cette spécification d'origine (voir [database/schema.sql](../database/schema.sql) pour le détail commenté) : `prenom`/`age` sont devenus `pseudo`/`date_naissance` (refonte onboarding, section 2) ; `frequence_seances`, `objectif_declare`, `bio`, `photo_url`, `profil_public` ont été ajoutés sur `utilisateurs` pour l'onboarding refondu et le Profil enrichi (section 3). Pas de table `aliments` séparée pour Open Food Facts : `entrees_alimentaires` garde `code_barres` (nullable, référence OFF) + `image_url` + `quantite` directement, les valeurs nutritionnelles étant déjà celles mises à l'échelle de la quantité choisie plutôt qu'un pour-100g à recalculer à chaque lecture. En revanche une table `bibliotheque_aliments` existe bien (ajoutée le 14/09) : ~150 aliments courants (viandes, poissons, légumes, fruits...) avec leurs valeurs pour 100 g, interrogée en complément d'Open Food Facts pour que la recherche fonctionne aussi sur les aliments bruts (voir section 3).
+
+Groupes d'entraînement (ajoutés le 15/09, voir section 3) : trois tables — `groupes` (nom, code d'invitation, créateur), `groupes_membres` (adhésion, une ligne par membre), `encouragements` (un kudos, une ligne par personne par séance). Pas de table "activités" séparée : le fil d'activité d'un groupe se lit directement depuis `seances` (JOIN sur `groupes_membres`), même logique que la streak recalculée à la volée plutôt que stockée.
 
 ## 5. Pages de l'app
 

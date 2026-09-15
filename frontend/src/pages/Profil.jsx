@@ -17,6 +17,7 @@ const LIENS = [
   ['/progression', 'Ma progression', 'Poids de corps et charges soulevées (toujours privé)'],
   ['/programmes', 'Mes programmes', 'Tes séances types'],
   ['/classement', 'Classement', 'Le top 100 des GOAT'],
+  ['/groupes', 'Mes groupes', 'Suivez vos séances entre proches, encouragez-vous'],
   ['/', 'Recalculer mon objectif', 'Calories et macros, à refaire quand ton poids change'],
   ['/feedback', 'Une idée, un bug ?', 'Écris-nous'],
 ];

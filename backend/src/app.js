@@ -11,6 +11,7 @@ import { config } from './config.js';
 import { gestionnaireErreurs } from './erreurs.js';
 import { routesExercices } from './exercices/routes.js';
 import { routesFeedback } from './feedback/routes.js';
+import { routesGroupes } from './groupes/routes.js';
 import { routesJournal, routesObjectif } from './journal/routes.js';
 import { routesProgrammes } from './programmes/routes.js';
 import { routesProgression } from './progression/routes.js';
@@ -49,6 +50,7 @@ export function creerApp() {
   app.use('/api/quetes', routesQuetes);
   app.use('/api/admin', routesAdmin);
   app.use('/api/aliments', routesAliments);
+  app.use('/api/groupes', routesGroupes);
 
   app.use('/api', (req, res) => res.status(404).json({ erreur: 'Route introuvable' }));
   app.use(gestionnaireErreurs);

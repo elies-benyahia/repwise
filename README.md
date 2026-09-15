@@ -306,7 +306,8 @@ Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
   d'exercices via wger.de + page `/credits`, badges de rang retravaillés, thème de couleur
   réglable (vert/bleu/rouge/violet) sur `/profil`, bibliothèque de ~150 aliments courants pour une
   vraie autocomplétion (Open Food Facts seul étant pauvre sur les aliments bruts), mot de passe
-  oublié, pages légales, et **mise en ligne** (Vercel + Render + Aiven, voir DEPLOY.md)
+  oublié, pages légales, **mise en ligne** (Vercel + Render + Aiven, voir DEPLOY.md), menu mobile
+  allégé (page active seule en vert), et groupes d'entraînement (fil d'activité + encouragements)
 - [x] 12. Monétisation (V3), phase 2 — Google AdSense sur le calculateur + bannière de consentement
   RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
@@ -435,6 +436,12 @@ admin » plus bas.
 | PATCH | `/api/admin/utilisateurs/:id/rang` | correction manuelle du rang (admin, éphémère) |
 | GET | `/api/admin/feedback[?statut=]` | tous les retours reçus (admin) |
 | PATCH | `/api/admin/feedback/:id` | changer le statut d'un retour (admin) |
+| GET | `/api/groupes` | mes groupes (id, nom, nombre de membres) |
+| POST | `/api/groupes` | créer un groupe (créateur = premier membre) |
+| POST | `/api/groupes/rejoindre` | rejoindre par code d'invitation (idempotent) |
+| GET | `/api/groupes/:id` | détail : membres (mini-classement) + fil d'activité |
+| DELETE | `/api/groupes/:id/membres/moi` | quitter le groupe |
+| POST | `/api/groupes/:id/seances/:seanceId/encouragement` | basculer un encouragement (kudos) |
 
 ## Rang et classement
 
@@ -483,6 +490,39 @@ performance, ne le remplace pas », cahier §3).
 `/profil`) : rang + barre de progression vers le palier suivant, quêtes du jour/de la semaine
 avec coche et texte barré une fois faites, et un « Récap » listant le meilleur score par exercice
 ayant compté dans le calcul (`parExercice`, ajouté à `calculerScore`).
+
+### Groupes d'entraînement (demande du 15/09)
+
+Demande : « un système de groupe... suivre leur progression... s'envoyer des messages ». Décision
+tranchée avant de coder (voir `docs/cahier-des-charges.md` §3) : une vraie messagerie libre (temps
+réel, historique, modération des abus/spam) est un chantier à part entière, disproportionné pour
+un site qui vient tout juste de lancer — **fil d'activité + encouragements rapides façon Strava**
+à la place. Un chat de groupe reste possible plus tard si le besoin se confirme à l'usage.
+
+`backend/src/groupes/routes.js` :
+
+- **Groupe** : privé, créé par un utilisateur (devient automatiquement membre), rejoint par un
+  **code à 8 caractères** (`ABCDEFGHJKLMNPQRSTUVWXYZ23456789` — sans 0/O/1/I/l, ambigus à
+  recopier). Pas de découverte publique : aucune liste de groupes existants n'est exposée. Rejoindre
+  est idempotent (recliquer un lien déjà utilisé ne casse rien) ; le rejoindre est rate-limité
+  (15/15 min) contre le brute-force du code.
+- **Mini-classement** : chaque membre avec son rang, son score et sa streak — les mêmes calculs que
+  `/rang`/`/classement` (`streakDe` exportée de `rang/routes.js` plutôt que dupliquée).
+- **Fil d'activité** : pas de table dédiée — lu directement depuis `seances` (`JOIN
+  groupes_membres`), même logique que la streak recalculée à la volée plutôt que stockée (une
+  séance modifiée/supprimée après coup resterait sinon fausse dans le fil). Seuls la **date** et
+  le **type** de séance sont montrés, jamais les charges/répétitions — mêmes règles de
+  confidentialité que le classement public (`rang/routes.js`).
+- **Encouragement** (👏, table `encouragements`) : un kudos par personne par séance, en bascule
+  (ajoute si absent, retire sinon). Ne peut cibler qu'une séance d'un membre **du même groupe** —
+  empêche à la fois d'encourager et de découvrir l'existence d'une séance hors de ce que ce groupe
+  partage.
+- **Confidentialité** : rejoindre un groupe vaut consentement à partager ses séances (type + date)
+  avec CE groupe précis — plus étroit que le classement public (qui exige en plus le rang GOAT +
+  `profil_public`). Un non-membre reçoit la même erreur 404 qu'un groupe inexistant (pas de fuite
+  d'existence, même logique que `/classement/:id`).
+- Frontend : `/groupes` (liste + créer/rejoindre, `Groupes.jsx`) et `/groupes/:id` (détail,
+  `Groupe.jsx`), lien depuis `/profil` comme Rang/Classement/Programmes (pas un 6e onglet).
 
 ### Rôle admin
 

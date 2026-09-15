@@ -18,7 +18,9 @@ routesRang.get('/', async (req, res) => {
   res.json({ rang: await recalculerRang(req.utilisateur.id) });
 });
 
-async function streakDe(utilisateurId, aujourdhui) {
+// Exportée : réutilisée par groupes/routes.js (mini-classement de groupe) pour ne pas dupliquer
+// la requête + le calcul de streak.
+export async function streakDe(utilisateurId, aujourdhui) {
   const [lignes] = await pool.execute(
     'SELECT DISTINCT date FROM seances WHERE utilisateur_id = ? AND date <= ? ORDER BY date',
     [utilisateurId, aujourdhui],
