@@ -678,6 +678,14 @@ DotGrid) et `ogl` (GhostFibers, rendu WebGL2) ; `InertiaPlugin` (DotGrid) fait p
 depuis que GreenSock est passé 100% gratuit, pas besoin d'installer autre chose.
 
 - **PillNav** : voir « Design : palette et navigation » ci-dessus — c'est la nav du site.
+  - **Retour du 15/09 (« la nav bar doit être clean »)** : le menu mobile (burger) du composant
+    remplit CHAQUE lien en vert plein par défaut, actif ou pas — sur desktop ça donne une rangée
+    compacte de pilules vertes (cohérent avec l'esprit "pill nav"), mais empilées à la verticale
+    sur mobile, 5 blocs pleins vert l'un sous l'autre faisaient un mur visuellement lourd. Le
+    composant marque déjà la page active avec une classe `.is-active` (juste inutilisée par son
+    propre CSS) : `styles.css` neutralise les liens non actifs (`:not(.is-active)`, fond
+    `--surface-haute` au lieu de l'accent) sans toucher `PillNav.jsx`/`PillNav.css` — seule la
+    page courante reste en vert, le reste redevient un menu discret.
 - **GhostFibers** : fond commun à **tout le site** depuis les retours du hero v4 (`App.jsx`,
   `.fond-global` — voir « Retours après premier rendu » ci-dessus), plus propre à la page
   Calculateur. N'a plus besoin de `lightMode` (retiré) : son mode par défaut est pensé pour un

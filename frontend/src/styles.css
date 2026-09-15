@@ -117,6 +117,26 @@ h2 {
   padding-top: 74px;
 }
 
+/* Retour utilisateur (15/09, "la nav bar doit être clean") : le menu mobile de PillNav remplit
+   CHAQUE lien en vert plein par défaut (styles d'origine du composant, PillNav.css non modifié) —
+   cohérent avec les pilules desktop (toutes vertes, une rangée compacte), mais empilées à la
+   verticale sur mobile ça fait un mur de blocs verts, lourd à l'œil. On ne garde le remplissage
+   plein que pour la page active (déjà marquée `.is-active` par le composant) ; les autres
+   retombent sur un style neutre, cohérent avec le reste des listes du site (`.carte-seance` etc.). */
+.mobile-menu-popover .mobile-menu-link:not(.is-active) {
+  color: var(--texte);
+  background-color: var(--surface-haute);
+}
+
+.mobile-menu-popover .mobile-menu-link:not(.is-active):hover {
+  background-color: color-mix(in srgb, var(--surface-haute) 70%, var(--texte) 8%);
+}
+
+.mobile-menu-popover .mobile-menu-link {
+  padding: 11px 16px;
+  font-size: 0.95rem;
+}
+
 .badge-niveau {
   flex-shrink: 0;
   padding: 2px 8px;

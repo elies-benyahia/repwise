@@ -54,6 +54,11 @@ docs/cahier-des-charges.md. Suivre l'ordre de la roadmap §9 ; l'avancement est 
   `.nav-enveloppe` (frontend/src/navigation.js) — pense à
   `.nav-enveloppe[data-position='...'] .pill-nav-container` si tu ajoutes une position autre que
   "en haut" (le CSS pour bas/gauche/droite reste à écrire, page Paramètres à venir).
+  Retour du 15/09 ("la nav bar doit être clean") : le style d'origine du composant remplit
+  chaque lien du menu mobile en vert plein (`.mobile-menu-popover .mobile-menu-link`), actif ou
+  pas — cohérent avec les pilules desktop (une rangée compacte) mais lourd une fois empilé à la
+  verticale. Neutralisé pour les liens non actifs via `:not(.is-active)` dans styles.css (fond
+  `--surface-haute` au lieu de `--pill-bg`) plutôt que de toucher PillNav.jsx/css.
 - Toute écriture qui peut changer le rang (séances, poids, sexe) doit appeler `recalculerRang`
   (backend/src/rang/depot.js). Constantes du rang : backend/src/rang/calcul.js.
 - Quêtes (backend/src/quetes/) : 3 quotidiennes + 1 hebdomadaire, matérialisées à la volée dans
