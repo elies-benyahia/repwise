@@ -624,9 +624,10 @@ textuelle) — reconstruite à partir des éléments listés dans le cahier :
   anonymes, un simple motif décoratif « communauté », jamais présenté comme un vrai signal social.
 - Carte flottante à droite (`.hero-carte`) : mini-mockup stylisé du dashboard (flamme + barres),
   pas une vraie capture d'écran automatisée — 2 étiquettes en pilule dans les coins (« Suivi
-  quotidien » vert, « 100% gratuit » neutre), une bulle flottante (« Séance loggée ✓ »), 2 icônes
-  rondes en bas à droite (lecture/thème, décoratives — pas de vraie vidéo de démo ni de bascule de
-  thème implémentées).
+  quotidien » vert, « 100% gratuit » neutre), une bulle flottante (« Séance loggée ✓ »). Avait à
+  l'origine 2 icônes rondes en bas à droite (lecture/thème, décoratives — pas de vraie vidéo de
+  démo ni de bascule de thème implémentées) : **retirées (retour du 15/09)**, elles ne menaient à
+  rien de réel et alourdissaient la carte sans raison.
 - TextLoop (texture de fond très discrète, `opacity: 0.35`, sans ruban) est rendu derrière cette
   structure — voir « Composants visuels » plus bas. GhostFibers, lui, n'est plus propre au hero
   (voir point suivant).

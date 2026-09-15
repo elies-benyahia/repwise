@@ -467,36 +467,6 @@ h2 {
   box-shadow: 0 8px 20px rgb(0 0 0 / 0.3);
 }
 
-.hero-icones {
-  position: absolute;
-  right: 16px;
-  bottom: -16px;
-  display: flex;
-  gap: 8px;
-}
-
-.hero-icone-ronde {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  color: var(--texte);
-  background: var(--surface-haute);
-  border: 1px solid var(--bordure);
-  border-radius: 50%;
-  box-shadow: 0 6px 16px rgb(0 0 0 / 0.3);
-}
-
-.hero-icone-ronde svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 .carte {
   background: var(--surface);
   border: 1px solid var(--bordure);

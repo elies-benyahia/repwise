@@ -260,18 +260,6 @@ function HeroPublic() {
             </div>
 
             <div className="hero-bulle">Séance loggée ✓</div>
-
-            <div className="hero-icones">
-              <span className="hero-icone-ronde" role="img" aria-label="Aperçu vidéo">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l12 7-12 7V5Z" /></svg>
-              </span>
-              <span className="hero-icone-ronde" role="img" aria-label="Thème">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="12" cy="12" r="5" />
-                  <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-                </svg>
-              </span>
-            </div>
           </div>
         </div>
       </div>
