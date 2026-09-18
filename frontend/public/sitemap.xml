@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Retour du 18/09 ("SEO de base") : seulement les pages publiques avec un vrai contenu indexable
+     (pas /connexion, /inscription, /bienvenue... - des pages transactionnelles, ni les pages
+     protégées par une session, qui n'ont aucune valeur pour un moteur de recherche). URLs sur le
+     domaine de prod actuel (getrepwise.vercel.app) - à remplacer par repwise.fr une fois acheté
+     (cahier §1), ici et dans robots.txt. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://getrepwise.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://getrepwise.vercel.app/mentions-legales</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://getrepwise.vercel.app/confidentialite</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://getrepwise.vercel.app/credits</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+</urlset>

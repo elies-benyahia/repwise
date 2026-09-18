@@ -9,6 +9,26 @@
       name="description"
       content="Calcule gratuitement tes calories et tes macros (protéines, glucides, lipides) pour la prise de masse, la perte de gras ou la recomposition. Formule Mifflin-St Jeor."
     />
+    <!-- Retour du 18/09 ("SEO de base") : Open Graph/Twitter Card manquants jusqu'ici. og:url
+         pointe sur le domaine de prod actuel (getrepwise.vercel.app) — à mettre à jour une fois
+         repwise.fr acheté (cahier §1). Pas d'og:image : aucun visuel raster 1200×630 n'existe
+         encore (seul le logo est un SVG, mal supporté par Facebook/Twitter en OG) — à ajouter
+         quand un vrai visuel de marque existera plutôt que d'en improviser un ici. -->
+    <link rel="canonical" href="https://getrepwise.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Repwise" />
+    <meta property="og:url" content="https://getrepwise.vercel.app/" />
+    <meta property="og:title" content="Calculateur calories musculation : prise de masse, sèche, macros | Repwise" />
+    <meta
+      property="og:description"
+      content="Calcule gratuitement tes calories et tes macros (protéines, glucides, lipides) pour la prise de masse, la perte de gras ou la recomposition. Formule Mifflin-St Jeor."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Calculateur calories musculation : prise de masse, sèche, macros | Repwise" />
+    <meta
+      name="twitter:description"
+      content="Calcule gratuitement tes calories et tes macros pour la prise de masse, la sèche ou la recomposition."
+    />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>" />
     <script>
       // Pose l'attribut avant le premier rendu React pour éviter un flash vert → couleur choisie
