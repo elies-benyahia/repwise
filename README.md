@@ -330,6 +330,29 @@ Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
   RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
 
+### Performance et SEO (retour du 18/09)
+
+Suite à « qu'est-ce que je peux améliorer sur le site » : deux chantiers sans dépendance externe
+(pas besoin du nom de domaine ni de nouvelles infos de l'utilisateur), traités avant le reste.
+
+- **Code-splitting** (`frontend/src/App.jsx`) : toutes les pages sauf `Calculateur` (porte d'entrée
+  SEO, doit rester dans le bundle initial) passent en `lazy()` + `<Suspense>`. Avant : un seul
+  chunk de 559 Ko (176 Ko gzip), qui chargeait le code de `/admin`, `/groupes`, `/journal`... même
+  pour visiter juste le calculateur. Après : chunk principal à 420 Ko (138 Ko gzip), chaque page en
+  chunk séparé de quelques Ko, chargé seulement à la navigation vers cette page. Le fond animé
+  (GhostFibers/ogl) et les animations de nav (gsap) restent dans le chunk principal : ils sont
+  rendus globalement sur toutes les pages (choix de design assumé), pas retirables par route sans
+  perdre l'effet visuel du site.
+- **SEO de base** : `public/sitemap.xml` (nouveau — seulement les pages publiques avec un vrai
+  contenu : `/`, `/mentions-legales`, `/confidentialite`, `/credits` ; pas les pages
+  transactionnelles comme `/connexion`/`/inscription`, ni les pages protégées) et référencé dans
+  `robots.txt`. `index.html` gagne les balises Open Graph/Twitter Card et un `<link rel="canonical">`
+  qui manquaient (le `<title>`/meta description existaient déjà). Pas d'`og:image` : aucun visuel
+  raster 1200×630 n'existe encore (seul le logo est un SVG, mal supporté par Facebook/Twitter en
+  OG) — à ajouter quand un vrai visuel de marque existera. Toutes les URLs pointent sur le domaine
+  de prod actuel (`getrepwise.vercel.app`) — à remplacer une fois `repwise.fr` acheté (cahier §1),
+  dans `index.html`, `sitemap.xml` et `robots.txt`.
+
 ### Checklist avant mise en ligne (audit du 14/09)
 
 Revue faite avant le lancement : tests (100 backend + 39 frontend, tous verts), code (auth,
