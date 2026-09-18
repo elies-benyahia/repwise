@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router';
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
 import BandeauConsentement from './components/BandeauConsentement.jsx';
@@ -9,30 +10,34 @@ import GradualBlur from './components/reactbits/GradualBlur.jsx';
 import { ConsentementPubProvider } from './consentement/ConsentementPubContext.jsx';
 import { ThemeCouleurProvider, useThemeCouleur } from './theme/ThemeCouleurContext.jsx';
 import { THEMES_COULEUR } from './lib/theme.js';
-import Accueil from './pages/Accueil.jsx';
-import Admin from './pages/Admin.jsx';
-import Authentification from './pages/Authentification.jsx';
-import Bienvenue from './pages/Bienvenue.jsx';
+// Calculateur reste un import statique : c'est la page d'accueil publique (porte d'entrée SEO),
+// elle doit être dans le bundle initial. Tout le reste est chargé à la demande (retour du 18/09,
+// "améliore le bundle JS" — un seul chunk de 559 Ko faisait tout charger même pour /calculateur).
 import Calculateur from './pages/Calculateur.jsx';
-import Calendrier from './pages/Calendrier.jsx';
-import Classement from './pages/Classement.jsx';
-import Confidentialite from './pages/Confidentialite.jsx';
-import Credits from './pages/Credits.jsx';
-import Exercices from './pages/Exercices.jsx';
-import Feedback from './pages/Feedback.jsx';
-import Groupe from './pages/Groupe.jsx';
-import Groupes from './pages/Groupes.jsx';
-import JoueurClassement from './pages/JoueurClassement.jsx';
-import Journal from './pages/Journal.jsx';
-import MentionsLegales from './pages/MentionsLegales.jsx';
-import MotDePasseOublie from './pages/MotDePasseOublie.jsx';
-import Profil from './pages/Profil.jsx';
-import ReinitialiserMotDePasse from './pages/ReinitialiserMotDePasse.jsx';
-import Programme from './pages/Programme.jsx';
-import Programmes from './pages/Programmes.jsx';
-import Progression from './pages/Progression.jsx';
-import Rang from './pages/Rang.jsx';
-import PageSeance from './pages/Seance.jsx';
+
+const Accueil = lazy(() => import('./pages/Accueil.jsx'));
+const Admin = lazy(() => import('./pages/Admin.jsx'));
+const Authentification = lazy(() => import('./pages/Authentification.jsx'));
+const Bienvenue = lazy(() => import('./pages/Bienvenue.jsx'));
+const Calendrier = lazy(() => import('./pages/Calendrier.jsx'));
+const Classement = lazy(() => import('./pages/Classement.jsx'));
+const Confidentialite = lazy(() => import('./pages/Confidentialite.jsx'));
+const Credits = lazy(() => import('./pages/Credits.jsx'));
+const Exercices = lazy(() => import('./pages/Exercices.jsx'));
+const Feedback = lazy(() => import('./pages/Feedback.jsx'));
+const Groupe = lazy(() => import('./pages/Groupe.jsx'));
+const Groupes = lazy(() => import('./pages/Groupes.jsx'));
+const JoueurClassement = lazy(() => import('./pages/JoueurClassement.jsx'));
+const Journal = lazy(() => import('./pages/Journal.jsx'));
+const MentionsLegales = lazy(() => import('./pages/MentionsLegales.jsx'));
+const MotDePasseOublie = lazy(() => import('./pages/MotDePasseOublie.jsx'));
+const Profil = lazy(() => import('./pages/Profil.jsx'));
+const ReinitialiserMotDePasse = lazy(() => import('./pages/ReinitialiserMotDePasse.jsx'));
+const Programme = lazy(() => import('./pages/Programme.jsx'));
+const Programmes = lazy(() => import('./pages/Programmes.jsx'));
+const Progression = lazy(() => import('./pages/Progression.jsx'));
+const Rang = lazy(() => import('./pages/Rang.jsx'));
+const PageSeance = lazy(() => import('./pages/Seance.jsx'));
 
 // Pages où le bandeau invité serait redondant avec ce que l'onboarding affiche déjà.
 const PAGES_ONBOARDING = ['/bienvenue', '/connexion', '/inscription', '/mot-de-passe-oublie', '/reinitialiser-mot-de-passe'];
@@ -60,34 +65,36 @@ export default function App() {
             <div className="contenu-sous-nav">
               <BandeauInvite />
               <main className="conteneur">
-                <Routes>
-                  <Route path="/" element={<Calculateur />} />
-                  <Route path="/feedback" element={<Feedback />} />
-                  <Route path="/credits" element={<Credits />} />
-                  <Route path="/mentions-legales" element={<MentionsLegales />} />
-                  <Route path="/confidentialite" element={<Confidentialite />} />
-                  <Route path="/bienvenue" element={<Bienvenue />} />
-                  <Route path="/connexion" element={<Authentification mode="connexion" />} />
-                  <Route path="/inscription" element={<Authentification mode="inscription" />} />
-                  <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
-                  <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
-                  <Route path="/accueil" element={protegee(<Accueil />)} />
-                  <Route path="/calendrier" element={protegee(<Calendrier />)} />
-                  <Route path="/seance/nouvelle" element={protegee(<PageSeance />)} />
-                  <Route path="/seance/:id" element={protegee(<PageSeance />)} />
-                  <Route path="/journal" element={protegee(<Journal />)} />
-                  <Route path="/exercices" element={protegee(<Exercices />)} />
-                  <Route path="/programmes" element={protegee(<Programmes />)} />
-                  <Route path="/programmes/:id" element={protegee(<Programme />)} />
-                  <Route path="/profil" element={protegee(<Profil />)} />
-                  <Route path="/progression" element={protegee(<Progression />)} />
-                  <Route path="/classement" element={protegee(<Classement />)} />
-                  <Route path="/classement/:id" element={protegee(<JoueurClassement />)} />
-                  <Route path="/rang" element={protegee(<Rang />)} />
-                  <Route path="/groupes" element={protegee(<Groupes />)} />
-                  <Route path="/groupes/:id" element={protegee(<Groupe />)} />
-                  <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
-                </Routes>
+                <Suspense fallback={<p className="aide">Chargement…</p>}>
+                  <Routes>
+                    <Route path="/" element={<Calculateur />} />
+                    <Route path="/feedback" element={<Feedback />} />
+                    <Route path="/credits" element={<Credits />} />
+                    <Route path="/mentions-legales" element={<MentionsLegales />} />
+                    <Route path="/confidentialite" element={<Confidentialite />} />
+                    <Route path="/bienvenue" element={<Bienvenue />} />
+                    <Route path="/connexion" element={<Authentification mode="connexion" />} />
+                    <Route path="/inscription" element={<Authentification mode="inscription" />} />
+                    <Route path="/mot-de-passe-oublie" element={<MotDePasseOublie />} />
+                    <Route path="/reinitialiser-mot-de-passe" element={<ReinitialiserMotDePasse />} />
+                    <Route path="/accueil" element={protegee(<Accueil />)} />
+                    <Route path="/calendrier" element={protegee(<Calendrier />)} />
+                    <Route path="/seance/nouvelle" element={protegee(<PageSeance />)} />
+                    <Route path="/seance/:id" element={protegee(<PageSeance />)} />
+                    <Route path="/journal" element={protegee(<Journal />)} />
+                    <Route path="/exercices" element={protegee(<Exercices />)} />
+                    <Route path="/programmes" element={protegee(<Programmes />)} />
+                    <Route path="/programmes/:id" element={protegee(<Programme />)} />
+                    <Route path="/profil" element={protegee(<Profil />)} />
+                    <Route path="/progression" element={protegee(<Progression />)} />
+                    <Route path="/classement" element={protegee(<Classement />)} />
+                    <Route path="/classement/:id" element={protegee(<JoueurClassement />)} />
+                    <Route path="/rang" element={protegee(<Rang />)} />
+                    <Route path="/groupes" element={protegee(<Groupes />)} />
+                    <Route path="/groupes/:id" element={protegee(<Groupe />)} />
+                    <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
+                  </Routes>
+                </Suspense>
                 <PiedDePage />
               </main>
             </div>
