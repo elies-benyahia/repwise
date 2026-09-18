@@ -209,6 +209,10 @@ function RechercheAliment({ date, recents, onAjouter }) {
   const [selection, setSelection] = useState(null); // { aliment, quantite, repas }
   const [erreurAjout, setErreurAjout] = useState(null);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
+  // Retour du 18/09 ("saisie manuelle d'aliment") : secours pour un plat maison absent d'Open Food
+  // Facts et de la bibliothèque locale — un simple formulaire pour100g qui rejoint ensuite le même
+  // choisir()/SelectionAliment que la recherche, plutôt qu'un flux séparé.
+  const [saisieManuelle, setSaisieManuelle] = useState(false);
 
   useEffect(() => {
     if (terme.trim().length < 2) {
@@ -279,6 +283,15 @@ function RechercheAliment({ date, recents, onAjouter }) {
     );
   }
 
+  if (saisieManuelle) {
+    return (
+      <AjoutManuel
+        onValider={(aliment) => { setSaisieManuelle(false); choisir(aliment); }}
+        onAnnuler={() => setSaisieManuelle(false)}
+      />
+    );
+  }
+
   return (
     <div className="carte formulaire-aliment">
       <h2>Ajouter un aliment</h2>
@@ -321,7 +334,12 @@ function RechercheAliment({ date, recents, onAjouter }) {
       </div>
 
       {rechercheEnCours && <p className="aide">Recherche…</p>}
-      {!rechercheEnCours && erreurRecherche && <p className="aide">{erreurRecherche}</p>}
+      {!rechercheEnCours && erreurRecherche && (
+        <p className="aide">
+          {erreurRecherche}{' '}
+          <button type="button" className="lien" onClick={() => setSaisieManuelle(true)}>Ajoute-le toi-même</button>
+        </p>
+      )}
 
       {resultats.length > 0 && (
         <ul className="resultats-aliments">
@@ -340,6 +358,91 @@ function RechercheAliment({ date, recents, onAjouter }) {
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+// Saisie manuelle (retour du 18/09) : valeurs pour 100 g, comme un aliment de la recherche — une
+// fois validées, rejoint choisir() et donc le même SelectionAliment (quantité, repas, aperçu).
+function AjoutManuel({ onValider, onAnnuler }) {
+  const [nom, setNom] = useState('');
+  const [calories, setCalories] = useState('');
+  const [proteines, setProteines] = useState('');
+  const [glucides, setGlucides] = useState('');
+  const [lipides, setLipides] = useState('');
+  const [afficherErreurs, setAfficherErreurs] = useState(false);
+
+  const nombreValide = (v, max) => {
+    const n = versNombre(v);
+    return Number.isFinite(n) && n >= 0 && n <= max;
+  };
+  const erreurs = {
+    nom: nom.trim() ? null : 'Nom requis',
+    calories: nombreValide(calories, 900) ? null : 'Entre 0 et 900 kcal',
+    proteines: nombreValide(proteines, 100) ? null : 'Entre 0 et 100 g',
+    glucides: nombreValide(glucides, 100) ? null : 'Entre 0 et 100 g',
+    lipides: nombreValide(lipides, 100) ? null : 'Entre 0 et 100 g',
+  };
+  const valide = Object.values(erreurs).every((e) => !e);
+
+  function valider() {
+    if (!valide) return setAfficherErreurs(true);
+    onValider({
+      nom: nom.trim(),
+      codeBarres: null,
+      imageUrl: null,
+      pour100g: {
+        calories: versNombre(calories),
+        proteines: versNombre(proteines),
+        glucides: versNombre(glucides),
+        lipides: versNombre(lipides),
+        sucre: 0,
+      },
+    });
+  }
+
+  return (
+    <div className="carte formulaire-aliment">
+      <h2>Ajouter un aliment personnalisé</h2>
+      <p className="aide">
+        Pour un plat maison absent de la recherche — valeurs pour 100 g, comme sur un emballage.
+      </p>
+
+      <div className={`champ${afficherErreurs && erreurs.nom ? ' champ-erreur' : ''}`}>
+        <label htmlFor="nom-manuel">Nom</label>
+        <input
+          id="nom-manuel" type="text" maxLength={150} autoComplete="off"
+          placeholder="Ex. Gratin de courgettes maison"
+          value={nom} onChange={(e) => setNom(e.target.value)}
+        />
+        {afficherErreurs && erreurs.nom && <p className="message-erreur">{erreurs.nom}</p>}
+      </div>
+
+      <ChampNumerique
+        id="calories-manuel" label="Calories" unite="kcal / 100 g" inputMode="numeric"
+        valeur={calories} onChange={(e) => setCalories(e.target.value)}
+        erreur={afficherErreurs ? erreurs.calories : null}
+      />
+      <ChampNumerique
+        id="proteines-manuel" label="Protéines" unite="g / 100 g" inputMode="numeric"
+        valeur={proteines} onChange={(e) => setProteines(e.target.value)}
+        erreur={afficherErreurs ? erreurs.proteines : null}
+      />
+      <ChampNumerique
+        id="glucides-manuel" label="Glucides" unite="g / 100 g" inputMode="numeric"
+        valeur={glucides} onChange={(e) => setGlucides(e.target.value)}
+        erreur={afficherErreurs ? erreurs.glucides : null}
+      />
+      <ChampNumerique
+        id="lipides-manuel" label="Lipides" unite="g / 100 g" inputMode="numeric"
+        valeur={lipides} onChange={(e) => setLipides(e.target.value)}
+        erreur={afficherErreurs ? erreurs.lipides : null}
+      />
+
+      <div className="selection-aliment-actions">
+        <button type="button" className="bouton-secondaire" onClick={onAnnuler}>Annuler</button>
+        <button type="button" className="bouton-principal" onClick={valider}>Continuer</button>
+      </div>
     </div>
   );
 }
