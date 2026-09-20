@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router';
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
 import BandeauConsentement from './components/BandeauConsentement.jsx';
@@ -22,6 +23,7 @@ const Bienvenue = lazy(() => import('./pages/Bienvenue.jsx'));
 const Calendrier = lazy(() => import('./pages/Calendrier.jsx'));
 const Classement = lazy(() => import('./pages/Classement.jsx'));
 const Confidentialite = lazy(() => import('./pages/Confidentialite.jsx'));
+const ConditionsUtilisation = lazy(() => import('./pages/ConditionsUtilisation.jsx'));
 const Credits = lazy(() => import('./pages/Credits.jsx'));
 const Exercices = lazy(() => import('./pages/Exercices.jsx'));
 const Feedback = lazy(() => import('./pages/Feedback.jsx'));
@@ -31,6 +33,7 @@ const JoueurClassement = lazy(() => import('./pages/JoueurClassement.jsx'));
 const Journal = lazy(() => import('./pages/Journal.jsx'));
 const MentionsLegales = lazy(() => import('./pages/MentionsLegales.jsx'));
 const MotDePasseOublie = lazy(() => import('./pages/MotDePasseOublie.jsx'));
+const PageIntrouvable = lazy(() => import('./pages/PageIntrouvable.jsx'));
 const Profil = lazy(() => import('./pages/Profil.jsx'));
 const ReinitialiserMotDePasse = lazy(() => import('./pages/ReinitialiserMotDePasse.jsx'));
 const Programme = lazy(() => import('./pages/Programme.jsx'));
@@ -72,6 +75,7 @@ export default function App() {
                     <Route path="/credits" element={<Credits />} />
                     <Route path="/mentions-legales" element={<MentionsLegales />} />
                     <Route path="/confidentialite" element={<Confidentialite />} />
+                    <Route path="/conditions-utilisation" element={<ConditionsUtilisation />} />
                     <Route path="/bienvenue" element={<Bienvenue />} />
                     <Route path="/connexion" element={<Authentification mode="connexion" />} />
                     <Route path="/inscription" element={<Authentification mode="inscription" />} />
@@ -93,12 +97,18 @@ export default function App() {
                     <Route path="/groupes" element={protegee(<Groupes />)} />
                     <Route path="/groupes/:id" element={protegee(<Groupe />)} />
                     <Route path="/admin" element={<RouteAdmin><Admin /></RouteAdmin>} />
+                    <Route path="*" element={<PageIntrouvable />} />
                   </Routes>
                 </Suspense>
                 <PiedDePage />
               </main>
             </div>
             <BandeauConsentement />
+            {/* Vercel Web Analytics (retour du 21/09) : agrégé, sans cookie ni identifiant
+                personnel — contrairement à AdSense, ne nécessite pas le consentement de
+                BandeauConsentement (voir Confidentialite.jsx). N'a d'effet que si l'analytics est
+                activé côté dashboard Vercel pour ce projet. */}
+            <Analytics />
           </AuthProvider>
         </ConsentementPubProvider>
       </ThemeCouleurProvider>
@@ -156,6 +166,8 @@ function PiedDePage() {
       <Link to="/mentions-legales">Mentions légales</Link>
       <span aria-hidden="true"> · </span>
       <Link to="/confidentialite">Confidentialité</Link>
+      <span aria-hidden="true"> · </span>
+      <Link to="/conditions-utilisation">CGU</Link>
     </footer>
   );
 }

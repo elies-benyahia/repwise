@@ -51,7 +51,7 @@ export default function Authentification({ mode }) {
   if (utilisateur && !estInvite) {
     return profilComplet(utilisateur)
       ? <Navigate to={location.state?.depuis ?? ACCUEIL_CONNECTE} replace />
-      : <Navigate to="/bienvenue/profil" state={location.state} replace />;
+      : <Navigate to="/bienvenue" state={location.state} replace />;
   }
 
   async function soumettre(e) {

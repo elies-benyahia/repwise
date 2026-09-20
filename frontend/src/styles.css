@@ -2312,6 +2312,34 @@ a.bouton-secondaire {
   color: var(--accent-clair);
 }
 
+/* --- Page 404 (retour du 21/09) --- */
+
+.page-introuvable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 420px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.page-introuvable-code {
+  margin: 0;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--texte-doux);
+}
+
+.page-introuvable h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.page-introuvable .bouton-principal {
+  margin-top: 12px;
+}
+
 /* --- Rang --- */
 
 .badge-rang {

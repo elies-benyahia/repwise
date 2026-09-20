@@ -39,6 +39,12 @@ export default function MentionsLegales() {
         Le traitement des données personnelles est détaillé sur la page{' '}
         <a href="/confidentialite">Politique de confidentialité</a>.
       </p>
+
+      <h2>Conditions d'utilisation</h2>
+      <p>
+        Les règles d'usage du site sont détaillées sur la page{' '}
+        <a href="/conditions-utilisation">Conditions générales d'utilisation</a>.
+      </p>
     </section>
   );
 }
