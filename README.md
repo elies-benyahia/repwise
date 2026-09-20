@@ -325,7 +325,10 @@ Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
   allégé (page active seule en vert), groupes d'entraînement (fil d'activité + encouragements),
   bug du bouton « Suivre mes repas » corrigé (redirigeait vers le calculateur au lieu du journal),
   bibliothèque d'aliments étendue à ~287 (deuxième vague), édition de la quantité d'un aliment déjà
-  noté, et colonne des 8 rangs fixée à droite du classement en desktop
+  noté, colonne des 8 rangs fixée à droite du classement en desktop, code-splitting par page,
+  sitemap/Open Graph, page CGU, page 404 personnalisée (qui a révélé un lien mort réel), honeypot
+  anti-spam, compression des images (profil à l'upload + bibliothèque d'exercices), et Vercel
+  Web Analytics
 - [x] 12. Monétisation (V3), phase 2 — Google AdSense sur le calculateur + bannière de consentement
   RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
@@ -347,11 +350,43 @@ Suite à « qu'est-ce que je peux améliorer sur le site » : deux chantiers san
   contenu : `/`, `/mentions-legales`, `/confidentialite`, `/credits` ; pas les pages
   transactionnelles comme `/connexion`/`/inscription`, ni les pages protégées) et référencé dans
   `robots.txt`. `index.html` gagne les balises Open Graph/Twitter Card et un `<link rel="canonical">`
-  qui manquaient (le `<title>`/meta description existaient déjà). Pas d'`og:image` : aucun visuel
-  raster 1200×630 n'existe encore (seul le logo est un SVG, mal supporté par Facebook/Twitter en
-  OG) — à ajouter quand un vrai visuel de marque existera. Toutes les URLs pointent sur le domaine
-  de prod actuel (`getrepwise.vercel.app`) — à remplacer une fois `repwise.fr` acheté (cahier §1),
-  dans `index.html`, `sitemap.xml` et `robots.txt`.
+  qui manquaient (le `<title>`/meta description existaient déjà). `og:image` ajoutée le 21/09 (voir
+  ci-dessous). Toutes les URLs pointent sur le domaine de prod actuel (`getrepwise.vercel.app`) —
+  à remplacer une fois `repwise.fr` acheté (cahier §1), dans `index.html`, `sitemap.xml` et
+  `robots.txt`.
+
+### Audit sécurité/qualité (retour du 21/09)
+
+Checklist générique passée en revue point par point plutôt qu'appliquée aveuglément — la moitié
+existait déjà (confirmé, pas retouché) : confidentialité, bandeau cookies, meta title/description,
+sitemap/robots (voir ci-dessus), HTTPS forcé (Vercel : redirection 308 + HSTS `preload` déjà en
+place par défaut, rien à configurer), textes alternatifs (déjà corrects partout, y compris les
+`alt=""` volontaires sur des images à côté d'un texte qui les décrit déjà — supprimer le texte
+alternatif y est la bonne pratique WCAG, pas un oubli), contraste (palette sombre déjà validée à
+l'œil et via le calcul : `--texte-doux` sur `--fond` ≈ 7.4:1, largement AA), formulaires (déjà
+validés côté client ET serveur partout), CTA unique sur le calculateur (déjà le cas — un seul
+bouton principal visible par état de l'écran, depuis le retrait du bouton "Commencer" le 15/09),
+aucune clé API secrète côté front (le seul identifiant présent, `ca-pub-...` d'AdSense, est un ID
+public par construction, pas un secret).
+
+Ce qui manquait réellement, corrigé :
+- **Page CGU** (`/conditions-utilisation`) — absente jusqu'ici, avec un avertissement santé
+  explicite (calories/macros = indicatif, pas un avis médical).
+- **Page 404 personnalisée** (route catch-all `*`) — a révélé un vrai lien mort en prod
+  (`Authentification.jsx` redirigeait vers `/bienvenue/profil`, une route qui n'a jamais existé ;
+  page blanche avant ce correctif) — corrigé vers `/bienvenue`.
+- **Anti-spam** : honeypot sur le formulaire feedback (seule porte publique sans compte),
+  en plus du rate-limiting déjà en place partout ailleurs.
+- **Compression d'images** : photos de profil désormais recadrées 512×512 et recompressées en
+  JPEG à l'upload (`sharp`, remplace le stockage tel-quel) ; les 26 images d'exercices en PNG
+  recompressées (1.8 Mo → 428 Ko, mêmes fichiers/noms, aucun changement de base de données).
+- **`og:image`** (`public/og-image.png`, 1200×630) — générée avec le logo et la palette réels du
+  site via `sharp` (SVG → PNG), maintenant que le pipeline de compression existe.
+- **Analytics** : Vercel Web Analytics (`@vercel/analytics`) — pas de nouveau compte à créer,
+  pas de cookie, donc pas soumis au consentement AdSense.
+- **Vitesse de page** mesurée (CDP, réseau throttlé ~1.6 Mbit/s + 150 ms de latence, cache
+  désactivé) : ~1,15 s jusqu'à `load`, 151 Ko transférés pour `/` — cohérent avec le code-splitting
+  du 18/09.
 
 ### Checklist avant mise en ligne (audit du 14/09)
 
