@@ -16,6 +16,8 @@ export default function Feedback() {
   const [erreurs, setErreurs] = useState({});
   const [erreurGenerale, setErreurGenerale] = useState(null);
   const [etat, setEtat] = useState('saisie'); // saisie | envoi | envoye
+  // Anti-spam (retour du 21/09) : honeypot, jamais rempli par un humain — voir feedback/routes.js.
+  const [siteWeb, setSiteWeb] = useState('');
 
   async function envoyer(e) {
     e.preventDefault();
@@ -28,7 +30,7 @@ export default function Feedback() {
     setErreurs({});
     setEtat('envoi');
     try {
-      await appelerApi('/feedback', { methode: 'POST', corps: { type, description: texte, emailContact: email.trim() } });
+      await appelerApi('/feedback', { methode: 'POST', corps: { type, description: texte, emailContact: email.trim(), siteWeb } });
       setEtat('envoye');
     } catch (err) {
       setErreurs(err.champs ?? {});
@@ -59,6 +61,17 @@ export default function Feedback() {
 
       <form className="carte formulaire" onSubmit={envoyer} noValidate>
         {erreurGenerale && <p className="alerte" role="alert">{erreurGenerale}</p>}
+
+        <input
+          type="text"
+          name="site_web"
+          value={siteWeb}
+          onChange={(e) => setSiteWeb(e.target.value)}
+          className="visuellement-cache"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
 
         <fieldset className="groupe">
           <legend>Type de retour</legend>

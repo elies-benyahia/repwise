@@ -21,6 +21,14 @@ export const routesFeedback = Router();
 routesFeedback.post('/', limiteur, async (req, res) => {
   const c = req.body ?? {};
   const champs = {};
+
+  // Anti-spam (retour du 21/09) : champ honeypot, invisible pour un humain (voir Feedback.jsx),
+  // que seul un bot remplit aveuglément. Rempli => on répond succès sans rien écrire en base,
+  // pour ne pas signaler au bot qu'il a été détecté.
+  if (typeof c.siteWeb === 'string' && c.siteWeb.trim() !== '') {
+    return res.status(201).json({ ok: true });
+  }
+
   const description = typeof c.description === 'string' ? c.description.trim() : '';
   const emailContact = typeof c.emailContact === 'string' ? c.emailContact.trim().toLowerCase() : '';
 

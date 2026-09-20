@@ -67,6 +67,17 @@ test('feedback sans compte, rattaché à la session si elle existe', async () =>
   assert.deepEqual(Object.keys(invalide.corps.champs).sort(), ['description', 'emailContact', 'type']);
 });
 
+test('feedback : le honeypot rempli renvoie un faux succès sans rien écrire en base', async () => {
+  const avant = (await pool.execute('SELECT COUNT(*) AS n FROM feedback'))[0][0].n;
+  const r = await appeler('/feedback', {
+    methode: 'POST',
+    corps: { type: 'bug', description: 'Un vrai message de spam automatisé', siteWeb: 'http://spam.exemple.com' },
+  });
+  assert.equal(r.statut, 201);
+  const apres = (await pool.execute('SELECT COUNT(*) AS n FROM feedback'))[0][0].n;
+  assert.equal(apres, avant);
+});
+
 test('chaque poids saisi alimente la courbe de poids (un relevé par jour)', async () => {
   const cookie = await nouvelUtilisateur({ poids: 80 });
   await appeler('/profil', { methode: 'PATCH', cookie, corps: { poids: 79.4 } });
