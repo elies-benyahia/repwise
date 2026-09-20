@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import multer from 'multer';
+import sharp from 'sharp';
 import { exigerConnexion } from '../auth/sessions.js';
 import { pool } from '../db/pool.js';
 import { ErreurHttp } from '../erreurs.js';
@@ -140,12 +141,15 @@ await mkdir(DOSSIER_AVATARS, { recursive: true });
 
 const EXTENSIONS_AUTORISEES = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
 const TAILLE_MAX_PHOTO = 2 * 1024 * 1024;
+// Une photo de profil n'est jamais affichée plus grande que ça (voir .photo-profil-image et
+// consorts dans styles.css) : recadrer et recompresser côté serveur (retour du 21/09, "compresse
+// tes images") évite de stocker/servir une photo de 4-8 Mo tout droit sortie d'un téléphone.
+const COTE_PHOTO_PROFIL = 512;
 
+// En mémoire plutôt que sur disque : le fichier reçu n'est qu'une étape intermédiaire, on ne
+// stocke jamais l'original — seulement le JPEG recadré produit par sharp ci-dessous.
 const televersement = multer({
-  storage: multer.diskStorage({
-    destination: DOSSIER_AVATARS,
-    filename: (req, file, callback) => callback(null, `${randomUUID()}${EXTENSIONS_AUTORISEES[file.mimetype]}`),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: TAILLE_MAX_PHOTO },
   fileFilter: (req, file, callback) => callback(null, Boolean(EXTENSIONS_AUTORISEES[file.mimetype])),
 });
@@ -165,8 +169,21 @@ routesProfil.post('/photo', exigerConnexion, (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) throw new ErreurHttp(400, 'Image invalide (jpeg, png ou webp)', { photo: 'Format non accepté' });
 
+  const nomFichier = `${randomUUID()}.jpg`;
+  try {
+    await sharp(req.file.buffer)
+      .rotate() // applique l'orientation EXIF (photos de téléphone) avant de la perdre au ré-encodage
+      .resize(COTE_PHOTO_PROFIL, COTE_PHOTO_PROFIL, { fit: 'cover' })
+      .jpeg({ quality: 82 })
+      .toFile(path.join(DOSSIER_AVATARS, nomFichier));
+  } catch {
+    // Le mimetype déclaré par le client passait fileFilter mais les octets ne sont pas une image
+    // exploitable (fichier corrompu/renommé) : même message que le cas format non accepté.
+    throw new ErreurHttp(400, 'Image invalide (jpeg, png ou webp)', { photo: 'Format non accepté' });
+  }
+
   const [[avant]] = await pool.execute('SELECT photo_url FROM utilisateurs WHERE id = ?', [req.utilisateur.id]);
-  const photoUrl = `/uploads/avatars/${req.file.filename}`;
+  const photoUrl = `/uploads/avatars/${nomFichier}`;
   await pool.execute('UPDATE utilisateurs SET photo_url = ? WHERE id = ?', [photoUrl, req.utilisateur.id]);
   await supprimerAncienneFichier(avant?.photo_url);
   res.json({ utilisateur: await trouverUtilisateur(req.utilisateur.id) });

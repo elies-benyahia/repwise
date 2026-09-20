@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
+import sharp from 'sharp';
 import { demarrerServeurDeTest } from './outils.js';
 
 // Dossier jetable : les photos de test ne polluent pas backend/uploads/avatars, et l'existence
@@ -41,7 +42,9 @@ test('téléverser une photo de profil puis la remplacer', async () => {
   const r = await envoyerPhoto(cookie);
   assert.equal(r.status, 200);
   const { utilisateur } = await r.json();
-  assert.match(utilisateur.photoUrl, /^\/uploads\/avatars\/[\w-]+\.png$/);
+  // Retour du 21/09 ("compresse tes images") : toujours ré-encodé en JPEG, quel que soit le
+  // format d'origine (recadrage + compression via sharp) — voir utilisateurs/routes.js.
+  assert.match(utilisateur.photoUrl, /^\/uploads\/avatars\/[\w-]+\.jpg$/);
   assert.equal(await existeSurDisque(utilisateur.photoUrl), true);
 
   // Remplacer la photo supprime l'ancien fichier.
@@ -51,6 +54,23 @@ test('téléverser une photo de profil puis la remplacer', async () => {
   assert.notEqual(apres.photoUrl, ancienChemin);
   assert.equal(await existeSurDisque(apres.photoUrl), true);
   assert.equal(await existeSurDisque(ancienChemin), false);
+});
+
+test('la photo est recadrée en carré et recompressée en JPEG', async () => {
+  const { cookie } = await nouvelInvite();
+  // Image 2000×1000 (rectangulaire, volontairement plus grande que la cible) pour vérifier le
+  // recadrage carré, pas juste une réduction proportionnelle.
+  const grande = await sharp({ create: { width: 2000, height: 1000, channels: 3, background: { r: 200, g: 50, b: 50 } } })
+    .png()
+    .toBuffer();
+  const r = await envoyerPhoto(cookie, { octets: grande, nom: 'grande.png' });
+  assert.equal(r.status, 200);
+  const { utilisateur } = await r.json();
+
+  const metadonnees = await sharp(path.join(dossierUploads, path.basename(utilisateur.photoUrl))).metadata();
+  assert.equal(metadonnees.format, 'jpeg');
+  assert.equal(metadonnees.width, 512);
+  assert.equal(metadonnees.height, 512);
 });
 
 test('un format non accepté est refusé', async () => {
