@@ -54,7 +54,11 @@ export default function Confidentialite() {
           <a href="https://world.openfoodfacts.org" target="_blank" rel="noreferrer">Open Food Facts</a> :
           quand tu cherches un aliment, ton terme de recherche leur est transmis (pas ton identité).
         </li>
-        <li>Vercel (hébergement du site) et Render (hébergement de l'API et de la base de données).</li>
+        <li>
+          Vercel (hébergement du site) et Render (hébergement de l'API et de la base de données).
+          Vercel Web Analytics mesure la fréquentation du site de façon agrégée, sans cookie ni
+          identifiant qui te suive individuellement.
+        </li>
         <li>
           [Si activé] Resend, pour l'envoi de l'email de réinitialisation de mot de passe : ton
           adresse email leur est transmise uniquement au moment de cet envoi.
