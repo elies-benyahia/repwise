@@ -412,9 +412,37 @@ fonctionnalités"), traitée dans l'ordre proposé.
   `followMouse` désactivé volontairement : le fond est global et fixe derrière tout le site (y
   compris les pages de saisie), suivre le curseur partout aurait été plus distrayant qu'utile.
 
-Restent de la même liste (pas encore traités) : squelettes de chargement (le fallback Suspense est
-encore un simple texte), tests de bout en bout sur le parcours critique, rappels/relance de streak,
-badges secondaires hors rang, export PDF/CSV de la progression.
+Restent de la même liste (pas encore traités) : tests de bout en bout sur le parcours critique,
+rappels/relance de streak, badges secondaires hors rang, export PDF/CSV de la progression.
+
+### Nouvelles idées (retour du 21/09, encore une suite)
+
+Après une nouvelle demande "je peux ajouter quoi", suivie de la question directe sur un tracker
+GPS + comptage de pas + Apple Health pour une future version mobile : **HealthKit et le suivi GPS
+en arrière-plan ne sont accessibles qu'à une vraie app iOS native — impossible depuis ce site web,
+quelle que soit son installabilité.** Nécessite un Mac (Xcode) + un compte développeur Apple (les
+deux absents à ce jour) ; le point 13 de la roadmap (React Native) attend ces prérequis. Traité en
+attendant, sans ce blocage :
+
+- **PWA installable** (`vite-plugin-pwa`, `registerType: 'autoUpdate') : manifest + service worker
+  qui précache l'app shell (43 entrées, ~625 Ko) — `/api` et `/uploads` explicitement exclus du
+  fallback de navigation, la donnée métier reste toujours en ligne uniquement. Icônes générées avec
+  le logo/la palette réels du site (même pipeline `sharp` que `og-image.png`) : 192/512 standard,
+  512 maskable, apple-touch-icon 180. `theme-color` aligné sur `--fond` au passage (différait
+  légèrement de la valeur posée jusqu'ici).
+- **Squelettes de chargement** (`components/Squelette.jsx`) : les 17 endroits qui affichaient
+  "Chargement…" en texte brut (dashboard, journal, calendrier, classement, groupe, progression,
+  formulaire de séance, exercices, profil, programmes, rang, admin, fallback Suspense du
+  code-splitting) passent à des blocs qui pulsent (shimmer CSS, respecte prefers-reduced-motion).
+- **Calculateur de plaques** (`lib/plaques.js`, pur et testé) : jeu olympique courant
+  (25/20/15/10/5/2.5/1.25 kg), barre à 20 kg par défaut, glouton du plus lourd au plus léger.
+  Bouton "Voir les plaques" par série dans le formulaire de séance, replié par défaut, visible
+  seulement quand le poids saisi dépasse le poids de la barre.
+
+Restent de cette liste : défis entre amis dans un groupe, partage de progression en image, minuteur
+de repos actif, suggestions de repas selon les macros restantes, notif d'activité de groupe en
+temps réel, scanner de code-barres, rappel d'hydratation — plus la liste précédente toujours
+ouverte (tests e2e, rappels de streak, badges secondaires, export PDF/CSV).
 
 ### Checklist avant mise en ligne (audit du 14/09)
 
