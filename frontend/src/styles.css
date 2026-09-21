@@ -1525,6 +1525,21 @@ a.bouton-principal {
   border-color: var(--erreur);
 }
 
+/* Calculateur de plaques (retour du 21/09) : 5e "ligne" virtuelle par série, .ligne-serie étant
+   en display:contents ses enfants participent directement à la grille de .tableau-series. */
+.ligne-plaques {
+  grid-column: 1 / -1;
+  margin: -2px 0 2px;
+}
+
+.bouton-plaques {
+  font-size: 0.78rem;
+}
+
+.ligne-plaques .aide {
+  margin-top: 2px;
+}
+
 .carte-exercice-pied {
   display: flex;
   align-items: flex-end;

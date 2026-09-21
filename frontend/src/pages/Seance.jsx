@@ -5,7 +5,8 @@ import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { aujourdhui, depuisCle, estJourValide, formaterJour, moisDe } from '../lib/dates.js';
-import { formaterNombre } from '../lib/format.js';
+import { formaterNombre, versNombre } from '../lib/format.js';
+import { calculerPlaques } from '../lib/plaques.js';
 import { resumerSeries, texteDePartage, texteSuggestion } from '../lib/progression.js';
 import {
   TYPES_SEANCE, ajouterExerciceNomme, appliquerProgramme, depuisApi, exerciceVide, libelleSeance, nouvelleSeance,
@@ -345,11 +346,20 @@ function CarteExercice({ index, exercice, date, erreurs, focaliser, onChange, on
   const chemin = `exercices.${index}`;
   const idNom = `exercice-${exercice.cle}-nom`;
   const idRepos = `exercice-${exercice.cle}-repos`;
+  // Calculateur de plaques (retour du 21/09) : replié par défaut, par série (une série à 100 kg
+  // n'implique pas que les autres le soient aussi).
+  const [plaquesOuvertes, setPlaquesOuvertes] = useState(() => new Set());
 
   const modifierSerie = (j, champ) => (e) => onChange((ex) => ({
     ...ex,
     series: ex.series.map((s, k) => (k === j ? { ...s, [champ]: e.target.value } : s)),
   }));
+
+  const basculerPlaques = (cle) => setPlaquesOuvertes((s) => {
+    const suivant = new Set(s);
+    if (suivant.has(cle)) suivant.delete(cle); else suivant.add(cle);
+    return suivant;
+  });
 
   return (
     <div className="carte carte-exercice">
@@ -393,6 +403,9 @@ function CarteExercice({ index, exercice, date, erreurs, focaliser, onChange, on
         {exercice.series.map((serie, j) => {
           const erreurReps = erreurs[`${chemin}.series.${j}.repetitions`];
           const erreurPoids = erreurs[`${chemin}.series.${j}.poids`];
+          const poidsNombre = versNombre(serie.poids);
+          const plaques = Number.isFinite(poidsNombre) ? calculerPlaques(poidsNombre) : null;
+          const plaquesVisibles = plaquesOuvertes.has(serie.cle);
           return (
             <div key={serie.cle} className="ligne-serie">
               <span className="numero-serie">{j + 1}</span>
@@ -427,6 +440,19 @@ function CarteExercice({ index, exercice, date, erreurs, focaliser, onChange, on
               >
                 ×
               </button>
+              {plaques && (
+                <div className="ligne-plaques">
+                  <button type="button" className="bouton-texte bouton-plaques" onClick={() => basculerPlaques(serie.cle)}>
+                    🏋️ {plaquesVisibles ? 'Masquer les plaques' : 'Voir les plaques'}
+                  </button>
+                  {plaquesVisibles && (
+                    <p className="aide">
+                      {formaterNombre(plaques.parCote)} kg / côté : {plaques.plaques.map((p) => `${p.quantite}×${formaterNombre(p.poids)}`).join(' + ')}
+                      {plaques.resteNonChargeable > 0 && ` (+ ${formaterNombre(plaques.resteNonChargeable)} kg non chargeable avec ce jeu de plaques)`}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
