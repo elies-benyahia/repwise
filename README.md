@@ -327,8 +327,9 @@ Cahier §8 phase 2 : compte Google AdSense créé par l'utilisateur le 14/09
   bibliothèque d'aliments étendue à ~287 (deuxième vague), édition de la quantité d'un aliment déjà
   noté, colonne des 8 rangs fixée à droite du classement en desktop, code-splitting par page,
   sitemap/Open Graph, page CGU, page 404 personnalisée (qui a révélé un lien mort réel), honeypot
-  anti-spam, compression des images (profil à l'upload + bibliothèque d'exercices), et Vercel
-  Web Analytics
+  anti-spam, compression des images (profil à l'upload + bibliothèque d'exercices), Vercel
+  Web Analytics, CI (GitHub Actions), états vides illustrés, moments de célébration (rang/streak/
+  record), et fond animé LightRays (remplace GhostFibers)
 - [x] 12. Monétisation (V3), phase 2 — Google AdSense sur le calculateur + bannière de consentement
   RGPD (voir « Monétisation (AdSense) » plus bas). Phase 3 (premium/affiliation) attend Stripe.
 - [ ] 13. App mobile React Native — une fois le web en ligne et stabilisé
@@ -387,6 +388,33 @@ Ce qui manquait réellement, corrigé :
 - **Vitesse de page** mesurée (CDP, réseau throttlé ~1.6 Mbit/s + 150 ms de latence, cache
   désactivé) : ~1,15 s jusqu'à `load`, 151 Ko transférés pour `/` — cohérent avec le code-splitting
   du 18/09.
+
+### Design, code et fonctionnalités (retour du 21/09, suite)
+
+Suite directe de l'audit ci-dessus — même demande ouverte ("améliore le site, design/code/
+fonctionnalités"), traitée dans l'ordre proposé.
+
+- **CI** (`.github/workflows/tests.yml`) : tests backend (MySQL 8 en service container) + tests et
+  build frontend, sur chaque push/PR vers `main`. Premier run en échec (Node 20 en CI vs Node 24 en
+  local — `node --test` avec un pattern glob se comporte différemment selon la version) ; corrigé en
+  alignant la CI sur la version utilisée en local.
+- **États vides illustrés** (`components/EtatVide.jsx`) : icône trait dans un rond (même vocabulaire
+  visuel que `.hero-avatar`) + texte, sur le journal vide, la carte "dernière séance" du dashboard,
+  la liste de groupes vide, le fil d'activité vide d'un groupe et le classement vide.
+- **Moments de célébration** (`backend/src/seances/celebrations.js`, `components/Celebration.jsx`) :
+  à la création d'une séance, détecte un nouveau rang, un palier de streak franchi (7/30/100 jours)
+  ou un record personnel par exercice (jamais à la toute première fois — rien à battre), affichés
+  en overlay avec confettis CSS sur la page de retour. Piège trouvé en testant : `pool.execute()`
+  ne développe pas un tableau pour `IN (?)` dans ce projet, seul `pool.query()` le fait (même
+  patron que `seances/depot.js`) — les records ne remontaient jamais avant ce correctif.
+- **Fond animé remplacé** : LightRays (React Bits) à la place de GhostFibers, intégré tel quel
+  (aucune modification interne), même couleur par thème (`glowColor` de `lib/theme.js`).
+  `followMouse` désactivé volontairement : le fond est global et fixe derrière tout le site (y
+  compris les pages de saisie), suivre le curseur partout aurait été plus distrayant qu'utile.
+
+Restent de la même liste (pas encore traités) : squelettes de chargement (le fallback Suspense est
+encore un simple texte), tests de bout en bout sur le parcours critique, rappels/relance de streak,
+badges secondaires hors rang, export PDF/CSV de la progression.
 
 ### Checklist avant mise en ligne (audit du 14/09)
 
