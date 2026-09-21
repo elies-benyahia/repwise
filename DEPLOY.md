@@ -85,3 +85,12 @@ intègre, ou modifie les fichiers toi-même et pousse.
 - Logs frontend/build : dashboard Vercel → projet `frontend` → onglet Deployments.
 - Revalider la base de données après une modification de schéma : redemande-moi de relancer
   `npm run db:init` contre la base de production (je le fais directement, pas besoin de CLI).
+- **Site qui renvoie des 500 sur tout ce qui touche un compte (inscription, connexion...)** :
+  vérifie d'abord le statut du service Aiven `mysql-3580bc1d` (console.aiven.io). **Le plan
+  gratuit met le service en veille après une période d'inactivité** — son hostname devient alors
+  introuvable en DNS (symptôme trompeur : on dirait que le service a été supprimé). Ce n'est pas
+  le cas : un service qui affiche "Rebuilding"/"Powered off" redémarre en quelques minutes avec
+  le **même hostname, les mêmes identifiants et toutes les données intactes** — aucune
+  reconfiguration nécessaire côté Render une fois qu'il repasse "Running". Vécu le 21/09 : panne
+  de plusieurs jours, résolue en relançant simplement le service (voir Aiven "Upgrade now" pour
+  $5/mois si tu veux éviter que ça se reproduise).
