@@ -919,6 +919,53 @@ a.bouton-principal {
   color: var(--texte-doux);
 }
 
+/* --- Squelettes de chargement (retour du 21/09) --- */
+
+.squelette {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(
+    100deg,
+    var(--surface-haute) 40%,
+    color-mix(in srgb, var(--surface-haute) 60%, var(--texte) 10%) 50%,
+    var(--surface-haute) 60%
+  );
+  background-size: 200% 100%;
+  animation: squelette-defile 1.6s ease-in-out infinite;
+}
+
+.squelette-ligne + .squelette-ligne {
+  margin-top: 8px;
+}
+
+.squelette-cercle {
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.squelette-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.squelette-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@keyframes squelette-defile {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .squelette {
+    animation: none;
+  }
+}
+
 /* --- État vide illustré (retour du 21/09) --- */
 
 .etat-vide {

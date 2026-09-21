@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { aujourdhui, depuisCle, estJourValide, formaterJour, moisDe } from '../lib/dates.js';
@@ -65,7 +66,13 @@ export default function PageSeance() {
       </section>
     );
   }
-  if (!initial) return <p className="aide">Chargement…</p>;
+  if (!initial) {
+    return (
+      <section className="page-seance">
+        <CarteSquelette lignes={4} />
+      </section>
+    );
+  }
   // key : repartir d'un formulaire neuf si on passe d'une séance à une autre.
   return <FormulaireSeance key={id ?? 'nouvelle'} id={id} initial={initial.etat} cleInitiale={initial.cleAFocaliser} />;
 }

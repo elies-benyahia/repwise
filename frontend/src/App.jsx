@@ -6,6 +6,7 @@ import BandeauConsentement from './components/BandeauConsentement.jsx';
 import Navigation from './components/Navigation.jsx';
 import RouteAdmin from './components/RouteAdmin.jsx';
 import RouteProtegee from './components/RouteProtegee.jsx';
+import { CarteSquelette } from './components/Squelette.jsx';
 import LightRays from './components/reactbits/LightRays.jsx';
 import GradualBlur from './components/reactbits/GradualBlur.jsx';
 import { ConsentementPubProvider } from './consentement/ConsentementPubContext.jsx';
@@ -68,7 +69,12 @@ export default function App() {
             <div className="contenu-sous-nav">
               <BandeauInvite />
               <main className="conteneur">
-                <Suspense fallback={<p className="aide">Chargement…</p>}>
+                <Suspense fallback={(
+                  <div className="squelette-page">
+                    <CarteSquelette lignes={2} />
+                    <CarteSquelette lignes={3} />
+                  </div>
+                )}>
                   <Routes>
                     <Route path="/" element={<Calculateur />} />
                     <Route path="/feedback" element={<Feedback />} />

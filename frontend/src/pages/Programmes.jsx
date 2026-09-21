@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 
@@ -38,7 +39,12 @@ export default function Programmes() {
       <p className="auth-sous-titre">Des séances types à relancer en un tap, remplies depuis la carte du corps.</p>
 
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!programmes && !erreur && <p className="aide">Chargement…</p>}
+      {!programmes && !erreur && (
+        <>
+          <CarteSquelette lignes={1} />
+          <CarteSquelette lignes={1} />
+        </>
+      )}
 
       {programmes?.length === 0 && (
         <p className="aide">Aucun programme pour l'instant. Crée-en un ci-dessous, puis ajoute-lui des exercices.</p>

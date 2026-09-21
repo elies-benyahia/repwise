@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import BadgeRang from '../components/BadgeRang.jsx';
 import Flamme from '../components/Flamme.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { formaterJour } from '../lib/dates.js';
@@ -30,7 +31,7 @@ export default function JoueurClassement() {
     <section className="classement">
       <Link to="/classement" className="lien lien-retour">‹ Classement</Link>
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!joueur && !erreur && <p className="aide">Chargement…</p>}
+      {!joueur && !erreur && <CarteSquelette lignes={3} />}
 
       {joueur && (
         <>

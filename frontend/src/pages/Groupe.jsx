@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import BadgeRang from '../components/BadgeRang.jsx';
 import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { formaterRelatif } from '../lib/dates.js';
@@ -64,7 +65,15 @@ export default function Groupe() {
   }
 
   if (erreur) return <section className="groupe"><p className="alerte" role="alert">{erreur}</p></section>;
-  if (!donnees) return <section className="groupe"><p className="aide">Chargement…</p></section>;
+  if (!donnees) {
+    return (
+      <section className="groupe">
+        <CarteSquelette lignes={1} />
+        <CarteSquelette lignes={2} />
+        <CarteSquelette lignes={2} />
+      </section>
+    );
+  }
 
   const { groupe, membres, activites } = donnees;
 

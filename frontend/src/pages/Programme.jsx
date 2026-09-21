@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { aujourdhui } from '../lib/dates.js';
@@ -46,7 +47,7 @@ export default function Programme() {
     <section className="programmes">
       <Link to="/programmes" className="lien lien-retour">‹ Mes programmes</Link>
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!programme && !erreur && <p className="aide">Chargement…</p>}
+      {!programme && !erreur && <CarteSquelette lignes={3} />}
 
       {programme && (
         <>

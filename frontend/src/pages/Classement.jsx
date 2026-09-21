@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.jsx';
 import BadgeRang from '../components/BadgeRang.jsx';
 import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { formaterNombre } from '../lib/format.js';
@@ -40,7 +41,13 @@ export default function Classement() {
       <h1>Classement</h1>
       <p className="auth-sous-titre">Le top 100 des pratiquants au rang GOAT, départagés par leur score.</p>
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!donnees && !erreur && <p className="aide">Chargement…</p>}
+      {!donnees && !erreur && (
+        <>
+          <CarteSquelette lignes={1} />
+          <CarteSquelette lignes={2} />
+          <CarteSquelette lignes={2} />
+        </>
+      )}
 
       {donnees && (
         <div className="classement-corps">

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import Celebration from '../components/Celebration.jsx';
+import { LigneSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import {
@@ -82,7 +83,7 @@ export default function Calendrier() {
           </p>
         ) : (
           <p className="resume-mois">
-            {etat === 'chargement' ? 'Chargement…' : `${pluriel(nbSeancesDuMois, 'séance')} ce mois-ci`}
+            {etat === 'chargement' ? <LigneSquelette largeur="9ch" hauteur={12} /> : `${pluriel(nbSeancesDuMois, 'séance')} ce mois-ci`}
           </p>
         )}
         {mois !== moisDe(jourCourant) && (

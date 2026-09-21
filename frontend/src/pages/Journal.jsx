@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router';
 import ChampNumerique from '../components/ChampNumerique.jsx';
 import EtatVide from '../components/EtatVide.jsx';
 import ResumeNutrition from '../components/ResumeNutrition.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { aujourdhui, depuisCle, estJourValide, formaterJour, versCle } from '../lib/dates.js';
@@ -109,7 +110,12 @@ export default function Journal() {
           <button type="button" className="lien" onClick={() => setTentative((n) => n + 1)}>Réessayer</button>
         </p>
       )}
-      {!journee && !erreur && <p className="aide">Chargement…</p>}
+      {!journee && !erreur && (
+        <>
+          <CarteSquelette lignes={2} />
+          <CarteSquelette lignes={1} />
+        </>
+      )}
 
       {journee && (
         <>

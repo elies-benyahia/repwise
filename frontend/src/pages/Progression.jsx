@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import GraphiqueLigne from '../components/GraphiqueLigne.jsx';
+import { LigneSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { depuisCle } from '../lib/dates.js';
@@ -26,7 +27,14 @@ function PoidsDeCorps() {
     appelerApi('/profil/poids').then((d) => setMesures(d.mesures)).catch(() => setMesures([]));
   }, []);
 
-  if (!mesures) return <p className="aide">Chargement…</p>;
+  if (!mesures) {
+    return (
+      <div className="carte carte-graphique">
+        <LigneSquelette largeur="30%" hauteur={18} />
+        <LigneSquelette largeur="100%" hauteur={120} />
+      </div>
+    );
+  }
   const premier = mesures[0];
   const dernier = mesures.at(-1);
   const ecart = mesures.length > 1 ? Math.round((dernier.poids - premier.poids) * 10) / 10 : 0;
@@ -108,7 +116,7 @@ function ProgressionExercice() {
           ))}
         </select>
       </div>
-      {!points && <p className="aide">Chargement…</p>}
+      {!points && <LigneSquelette largeur="100%" hauteur={120} />}
       {points && serie.length > 0 && (
         <>
           <p className="aide">

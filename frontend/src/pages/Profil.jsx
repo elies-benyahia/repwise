@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { useAuth } from '../auth/AuthContext.jsx';
 import BadgeRang from '../components/BadgeRang.jsx';
 import FormulaireProfil from '../components/FormulaireProfil.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi, envoyerFichier } from '../lib/api.js';
 import { ajouterJours, aujourdhui, formaterJour } from '../lib/dates.js';
@@ -278,7 +279,7 @@ function SeancesRecentes() {
     <div>
       <h2 className="titre-section">Mes séances récentes</h2>
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!seances && !erreur && <p className="aide">Chargement…</p>}
+      {!seances && !erreur && <CarteSquelette lignes={2} />}
       {seances?.length === 0 && <p className="aide">Aucune séance ces 30 derniers jours.</p>}
       {seances?.length > 0 && (
         <ul className="liste-seances">

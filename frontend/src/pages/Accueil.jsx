@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.jsx';
 import BadgeRang from '../components/BadgeRang.jsx';
 import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import DotGrid from '../components/reactbits/DotGrid.jsx';
 import ResumeNutrition from '../components/ResumeNutrition.jsx';
 import { useTitre } from '../hooks/useTitre.js';
@@ -58,7 +59,14 @@ export default function Accueil() {
           <button type="button" className="lien" onClick={() => setTentative((n) => n + 1)}>Réessayer</button>
         </p>
       )}
-      {!donnees && !erreur && <p className="aide">Chargement…</p>}
+      {!donnees && !erreur && (
+        <div className="accueil-grille">
+          <CarteSquelette lignes={2} />
+          <CarteSquelette lignes={1} />
+          <CarteSquelette lignes={3} />
+          <CarteSquelette lignes={2} />
+        </div>
+      )}
 
       {donnees && (
         <div className="accueil-grille">

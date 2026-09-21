@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useAuth } from '../auth/AuthContext.jsx';
 import CarteCorps from '../components/CarteCorps.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { aujourdhui } from '../lib/dates.js';
@@ -104,7 +105,13 @@ function ListeExercices({ groupe, programmes, onProgrammesModifies }) {
     <div className="liste-exercices">
       <h2>{GROUPES_MUSCULAIRES[groupe]}</h2>
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {!exercices && !erreur && <p className="aide">Chargement…</p>}
+      {!exercices && !erreur && (
+        <>
+          <CarteSquelette lignes={1} />
+          <CarteSquelette lignes={1} />
+          <CarteSquelette lignes={1} />
+        </>
+      )}
       {exercices?.map((exercice) => (
         <CarteExerciceBibliotheque
           key={exercice.id}

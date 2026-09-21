@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import BadgeRang from '../components/BadgeRang.jsx';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { formaterNombre } from '../lib/format.js';
@@ -28,7 +29,7 @@ export default function Rang() {
       <h1>Ton rang</h1>
 
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
-      {rang === undefined && !erreur && <p className="aide">Chargement…</p>}
+      {rang === undefined && !erreur && <CarteSquelette lignes={2} />}
 
       {rang === null && (
         <div className="carte mon-rang">

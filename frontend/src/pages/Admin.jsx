@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CarteSquelette } from '../components/Squelette.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import { formaterNombre } from '../lib/format.js';
@@ -68,7 +69,7 @@ export default function Admin() {
       {erreur && <p className="alerte" role="alert">{erreur}</p>}
 
       <h2 className="titre-section">Statistiques d'usage</h2>
-      {!statistiques && !erreur && <p className="aide">Chargement…</p>}
+      {!statistiques && !erreur && <CarteSquelette lignes={3} />}
       {statistiques && (
         <div className="grille-stats-admin">
           <div className="carte stat-admin">
@@ -101,7 +102,7 @@ export default function Admin() {
       )}
 
       <h2 className="titre-section">Utilisateurs</h2>
-      {!utilisateurs && !erreur && <p className="aide">Chargement…</p>}
+      {!utilisateurs && !erreur && <CarteSquelette lignes={2} />}
       {utilisateurs && (
         <div className="tableau-scroll">
           <table className="table-admin">
