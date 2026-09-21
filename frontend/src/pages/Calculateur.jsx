@@ -203,8 +203,8 @@ const NOMBRE_AVATARS = 4;
 function HeroPublic() {
   return (
     <section className="hero">
-      {/* Le fond animé (GhostFibers) est maintenant global — voir App.jsx — plutôt que propre à
-          ce hero (retour utilisateur : l'effet plaisait, il fallait le généraliser au site). */}
+      {/* Le fond animé (LightRays) est global — voir App.jsx — plutôt que propre à ce hero
+          (retour utilisateur : l'effet plaisait, il fallait le généraliser au site). */}
       <div className="hero-boucle-fond" aria-hidden="true">
         <TextLoop
           text="Repwise"

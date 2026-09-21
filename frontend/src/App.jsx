@@ -6,7 +6,7 @@ import BandeauConsentement from './components/BandeauConsentement.jsx';
 import Navigation from './components/Navigation.jsx';
 import RouteAdmin from './components/RouteAdmin.jsx';
 import RouteProtegee from './components/RouteProtegee.jsx';
-import GhostFibers from './components/reactbits/GhostFibers.jsx';
+import LightRays from './components/reactbits/LightRays.jsx';
 import GradualBlur from './components/reactbits/GradualBlur.jsx';
 import { ConsentementPubProvider } from './consentement/ConsentementPubContext.jsx';
 import { ThemeCouleurProvider, useThemeCouleur } from './theme/ThemeCouleurContext.jsx';
@@ -116,25 +116,25 @@ export default function App() {
   );
 }
 
-// Couleurs du fond animé pilotées par le thème choisi sur /profil (frontend/src/lib/theme.js) :
-// GhostFibers reçoit ses couleurs en props (uniforms WebGL), pas en CSS, donc contrairement au
-// reste du site (var(--accent)...) il a besoin d'être ré-alimenté explicitement ici.
+// Couleur du fond animé pilotée par le thème choisi sur /profil (frontend/src/lib/theme.js) :
+// LightRays reçoit sa couleur en prop (uniform WebGL), pas en CSS, donc contrairement au reste
+// du site (var(--accent)...) il a besoin d'être ré-alimenté explicitement ici. Retour du 21/09 :
+// remplace GhostFibers — même glowColor par thème pour garder la couleur inchangée.
 function FondAnime() {
   const { theme } = useThemeCouleur();
-  const { lineColor, glowColor } = THEMES_COULEUR[theme].ghostFibers;
+  const { glowColor } = THEMES_COULEUR[theme].ghostFibers;
   return (
     <div className="fond-global" aria-hidden="true">
-      <GhostFibers
-        lineColor={lineColor}
-        glowColor={glowColor}
-        speed={0.12}
-        scale={2.2}
-        rotationSpeed={0.06}
-        vignette={0.7}
-        brightness={2}
-        grain={0.025}
-        dpr={1}
-        fps={24}
+      <LightRays
+        raysOrigin="top-center"
+        raysColor={glowColor}
+        raysSpeed={1}
+        lightSpread={0.8}
+        rayLength={1.4}
+        followMouse={false}
+        noiseAmount={0.06}
+        distortion={0.05}
+        saturation={1}
       />
     </div>
   );
