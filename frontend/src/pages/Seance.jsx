@@ -121,10 +121,12 @@ function FormulaireSeance({ id, initial, cleInitiale }) {
     }
     setEnvoiEnCours(true);
     try {
-      await appelerApi(id ? `/seances/${id}` : '/seances', { methode: id ? 'PUT' : 'POST', corps });
+      const reponse = await appelerApi(id ? `/seances/${id}` : '/seances', { methode: id ? 'PUT' : 'POST', corps });
       // Le rang a pu changer : l'en-tête doit l'afficher à jour.
       await rafraichir().catch(() => {});
-      navigate(retourCalendrier);
+      // celebrations : uniquement sur une création (voir backend/src/seances/celebrations.js),
+      // affichée sur la page de retour via l'état de navigation.
+      navigate(retourCalendrier, reponse.celebrations ? { state: { celebrations: reponse.celebrations } } : undefined);
     } catch (err) {
       setErreurServeur(err.message);
       setEnvoiEnCours(false);

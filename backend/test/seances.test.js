@@ -185,3 +185,71 @@ test('un identifiant non numérique renvoie 404', async () => {
   const cookie = await nouvelInvite();
   assert.equal((await appeler('/seances/abc', { cookie })).statut, 404);
 });
+
+test('célébrations : record personnel détecté seulement à partir de la 2e fois', async () => {
+  const cookie = await nouvelInvite();
+  const seance1 = {
+    date: '2026-09-01', typeSeance: 'push',
+    exercices: [{ nomExercice: 'Développé couché', series: [{ repetitions: 8, poids: 80 }] }],
+  };
+  const r1 = await appeler('/seances', { methode: 'POST', corps: seance1, cookie });
+  assert.equal(r1.statut, 201);
+  // Première fois : rien à battre, pas de record.
+  assert.equal(r1.corps.celebrations?.records, undefined);
+
+  const seance2 = {
+    date: '2026-09-03', typeSeance: 'push',
+    exercices: [{ nomExercice: 'Développé couché', series: [{ repetitions: 8, poids: 85 }] }],
+  };
+  const r2 = await appeler('/seances', { methode: 'POST', corps: seance2, cookie });
+  assert.deepEqual(r2.corps.celebrations.records, [{ nom: 'Développé couché', poids: 85, repetitions: 8 }]);
+
+  // Charge plus légère : pas de nouveau record.
+  const seance3 = {
+    date: '2026-09-05', typeSeance: 'push',
+    exercices: [{ nomExercice: 'Développé couché', series: [{ repetitions: 8, poids: 70 }] }],
+  };
+  const r3 = await appeler('/seances', { methode: 'POST', corps: seance3, cookie });
+  assert.equal(r3.corps.celebrations, null);
+});
+
+test('célébrations : palier de streak franchi (7 jours consécutifs)', async () => {
+  const cookie = await nouvelInvite();
+  const joursDebut = 1;
+  let dernierCorps = null;
+  for (let jour = joursDebut; jour <= 7; jour += 1) {
+    const date = `2026-09-${String(jour).padStart(2, '0')}`;
+    const r = await appeler('/seances', {
+      methode: 'POST',
+      cookie,
+      corps: { date, typeSeance: 'full_body', exercices: [{ nomExercice: 'Course', series: [{ repetitions: 1, poids: 0 }] }] },
+    });
+    assert.equal(r.statut, 201);
+    dernierCorps = r.corps;
+  }
+  assert.equal(dernierCorps.celebrations.streak, 7);
+});
+
+test("célébrations : nouveau rang détecté, absent tant que rien ne change", async () => {
+  const cookie = await nouvelInvite();
+  // Un développé couché à 80 kg est déjà au-dessus du repère intermédiaire (score > 0) : le tout
+  // premier "vrai" rang obtenu compte comme une célébration (rien à comparer avant).
+  const r1 = await appeler('/seances', {
+    methode: 'POST',
+    cookie,
+    corps: { date: '2026-09-01', typeSeance: 'push', exercices: [{ nomExercice: 'Développé couché', series: [{ repetitions: 5, poids: 80 }] }] },
+  });
+  assert.equal(r1.statut, 201);
+  if (r1.corps.seance && r1.corps.celebrations?.nouveauRang) {
+    assert.ok(r1.corps.celebrations.nouveauRang.nom);
+  }
+
+  // Repartir avec les mêmes chiffres (même exercice, même séance) ne fait pas progresser le rang :
+  // pas de nouvelle célébration de rang la 2e fois.
+  const r2 = await appeler('/seances', {
+    methode: 'POST',
+    cookie,
+    corps: { date: '2026-09-03', typeSeance: 'push', exercices: [{ nomExercice: 'Développé couché', series: [{ repetitions: 5, poids: 80 }] }] },
+  });
+  assert.equal(r2.corps.celebrations?.nouveauRang, undefined);
+});

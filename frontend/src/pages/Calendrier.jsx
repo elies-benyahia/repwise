@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
+import Celebration from '../components/Celebration.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 import {
@@ -28,6 +29,17 @@ export default function Calendrier() {
   const [seances, setSeances] = useState([]);
   const [etat, setEtat] = useState('chargement');
   const [tentative, setTentative] = useState(0);
+
+  // Retour du 21/09 : célébration transmise par Seance.jsx via l'état de navigation à la
+  // création d'une séance (nouveau rang, palier de streak, record). Effacée du state une fois
+  // fermée, pour ne pas réapparaître à un retour arrière du navigateur.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [celebrations, setCelebrations] = useState(location.state?.celebrations ?? null);
+  const fermerCelebration = () => {
+    setCelebrations(null);
+    navigate({ pathname: location.pathname, search: location.search }, { replace: true, state: null });
+  };
 
   useEffect(() => {
     let abandonne = false;
@@ -119,6 +131,8 @@ export default function Calendrier() {
           chargement={etat === 'chargement'}
         />
       )}
+
+      <Celebration celebrations={celebrations} onFermer={fermerCelebration} />
     </section>
   );
 }

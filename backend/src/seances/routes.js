@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { exigerConnexion } from '../auth/sessions.js';
 import { ErreurHttp } from '../erreurs.js';
 import { recalculerRang } from '../rang/depot.js';
+import { detecterCelebrations, rangAvant, streakAvant } from './celebrations.js';
 import {
   creerSeance,
   lireSeanceComplete,
@@ -41,10 +42,24 @@ routesSeances.get('/:id', async (req, res) => {
 });
 
 // Chaque écriture peut changer le rang (meilleurs 1RM récents) : il est recalculé aussitôt.
+// Retour du 21/09 ("moments de célébration") : "avant" est capturé avant l'insertion (sinon la
+// séance qu'on vient de logger fausserait sa propre comparaison), uniquement à la création —
+// corriger une séance passée n'est pas le même moment que de finir sa séance du jour.
 routesSeances.post('/', async (req, res) => {
-  const id = await creerSeance(req.utilisateur.id, lireSeance(req.body));
-  await recalculerRang(req.utilisateur.id);
-  res.status(201).json({ seance: await lireSeanceComplete(req.utilisateur.id, id) });
+  const corps = lireSeance(req.body);
+  const avantRang = await rangAvant(req.utilisateur.id);
+  const avantStreak = await streakAvant(req.utilisateur.id, corps.date);
+  const id = await creerSeance(req.utilisateur.id, corps);
+  const rangApres = await recalculerRang(req.utilisateur.id);
+  const celebrations = await detecterCelebrations({
+    utilisateurId: req.utilisateur.id,
+    seanceId: id,
+    date: corps.date,
+    rangAvant: avantRang,
+    streakAvant: avantStreak,
+    rangApres,
+  });
+  res.status(201).json({ seance: await lireSeanceComplete(req.utilisateur.id, id), celebrations });
 });
 
 routesSeances.put('/:id', async (req, res) => {
