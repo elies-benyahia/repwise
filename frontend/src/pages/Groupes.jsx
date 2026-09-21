@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import EtatVide from '../components/EtatVide.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
 
@@ -39,7 +40,11 @@ export default function Groupes() {
         </ul>
       )}
       {groupes && groupes.length === 0 && (
-        <p className="aide">Tu ne fais partie d'aucun groupe pour l'instant.</p>
+        <EtatVide
+          icone="groupe"
+          titre="Aucun groupe pour l'instant"
+          texte="Crée un groupe ou rejoins-en un avec un code d'invitation."
+        />
       )}
 
       <RejoindreGroupe onRejoint={charger} />

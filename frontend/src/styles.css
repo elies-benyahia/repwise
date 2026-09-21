@@ -919,6 +919,52 @@ a.bouton-principal {
   color: var(--texte-doux);
 }
 
+/* --- État vide illustré (retour du 21/09) --- */
+
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 16px;
+  text-align: center;
+}
+
+.etat-vide-icone {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--surface-haute);
+  color: var(--accent-clair);
+}
+
+.etat-vide-icone svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.etat-vide-titre {
+  margin: 0;
+  font-weight: 700;
+}
+
+.etat-vide .aide {
+  max-width: 32ch;
+}
+
+.etat-vide .bouton-principal,
+.etat-vide .bouton-secondaire {
+  margin-top: 10px;
+}
+
 .alerte {
   margin: 0;
   padding: 10px 12px;
@@ -1584,11 +1630,6 @@ a.bouton-principal {
 
 .resume-journee .info {
   margin-top: 12px;
-}
-
-.journal-vide {
-  margin: 0;
-  text-align: center;
 }
 
 .liste-repas {
@@ -2507,11 +2548,6 @@ a.bouton-secondaire {
 .mon-rang-nom {
   font-size: 1.2rem;
   font-weight: 800;
-}
-
-.classement-vide {
-  margin: 12px 0;
-  text-align: center;
 }
 
 /* Retour du 15/09 ("colonne à droite tout les rangs") : empilé en mobile (panneau repliable,

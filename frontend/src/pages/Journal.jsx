@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import ChampNumerique from '../components/ChampNumerique.jsx';
+import EtatVide from '../components/EtatVide.jsx';
 import ResumeNutrition from '../components/ResumeNutrition.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
@@ -137,7 +138,9 @@ export default function Journal() {
 function ListeRepas({ entrees, onSupprimer, onModifier }) {
   const [erreur, setErreur] = useState(null);
 
-  if (entrees.length === 0) return <p className="aide journal-vide">Rien de noté pour ce jour.</p>;
+  if (entrees.length === 0) {
+    return <EtatVide icone="repas" titre="Rien de noté pour ce jour" texte="Cherche un aliment ci-dessous pour commencer." />;
+  }
 
   async function supprimer(id) {
     setErreur(null);

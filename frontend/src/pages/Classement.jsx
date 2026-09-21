@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '../auth/AuthContext.jsx';
 import BadgeRang from '../components/BadgeRang.jsx';
+import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
@@ -47,7 +48,7 @@ export default function Classement() {
             <MonRang moi={donnees.moi} maPosition={donnees.maPosition} scoreGoat={donnees.scoreGoat} total={donnees.classement.length} />
 
             {donnees.classement.length === 0 && (
-              <p className="aide classement-vide">Personne n'a encore atteint le rang GOAT. La place est libre.</p>
+              <EtatVide icone="classement" texte="Personne n'a encore atteint le rang GOAT. La place est libre." />
             )}
 
             {podium.length > 0 && (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import BadgeRang from '../components/BadgeRang.jsx';
+import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
 import { useTitre } from '../hooks/useTitre.js';
 import { appelerApi } from '../lib/api.js';
@@ -103,7 +104,9 @@ export default function Groupe() {
       </ol>
 
       <h2 className="titre-section">Activité récente</h2>
-      {activites.length === 0 && <p className="aide">Personne n'a encore loggé de séance dans ce groupe.</p>}
+      {activites.length === 0 && (
+        <EtatVide icone="seance" texte="Personne n'a encore loggé de séance dans ce groupe." />
+      )}
       {activites.length > 0 && (
         <ul className="liste-activites-groupe">
           {activites.map((a) => (

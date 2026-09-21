@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '../auth/AuthContext.jsx';
 import BadgeRang from '../components/BadgeRang.jsx';
+import EtatVide from '../components/EtatVide.jsx';
 import Flamme from '../components/Flamme.jsx';
 import DotGrid from '../components/reactbits/DotGrid.jsx';
 import ResumeNutrition from '../components/ResumeNutrition.jsx';
@@ -121,7 +122,7 @@ function CarteDerniereSeance({ seance, jour }) {
     return (
       <div className="carte carte-derniere-seance">
         <p className="surtitre">Dernière séance</p>
-        <p className="aide">Pas encore de séance loggée. La première, c'est maintenant !</p>
+        <EtatVide icone="seance" texte="Pas encore de séance loggée. La première, c'est maintenant !" />
       </div>
     );
   }
